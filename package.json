@@ -1,0 +1,20 @@
+{
+  "name": "discord-setup-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bot Discord qui crée tous les salons et les rôles du serveur en une commande",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "deploy": "node src/deploy-commands.js",
+    "invite": "node src/invite.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  }
+}
