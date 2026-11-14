@@ -5,8 +5,8 @@ traduit les messages d'un clic sur un drapeau, et gère les salons tutoriels ave
 
 ## Mettre le bot sur Discord : la marche à suivre
 
-Quatre étapes. La 1 et la 2 se font dans le navigateur du téléphone, la 3 et la 4 sur un
-hébergeur gratuit (Railway) relié à ce dépôt GitHub.
+Quatre étapes, **sans rien payer**. La 1 et la 2 se font dans le navigateur du téléphone,
+la 3 sur un hébergeur gratuit (Render) relié à ce dépôt GitHub, la 4 sur Discord.
 
 ### Étape 1 — Créer l'application et récupérer les identifiants
 
@@ -35,33 +35,51 @@ Ensuite, sur Discord : **Paramètres du serveur > Rôles** et glisse le rôle du
 **tout en haut** de la liste (au-dessus de OWNER). Sans ça, Discord refuse qu'il crée
 et réordonne les rôles.
 
-### Étape 3 — Mettre le bot en ligne (hébergement)
+### Étape 3 — Mettre le bot en ligne (gratuit)
 
-Le bot doit tourner 24 h/24, sur un serveur : il ne peut pas tourner dans FreeMilk.
-Le plus simple, sans terminal, c'est **Railway** :
+Le bot doit tourner 24 h/24 : il ne peut pas tourner dans FreeMilk, il lui faut un petit
+serveur. Les options ci-dessous sont **gratuites, sans carte bancaire**.
 
-1. Publie ce projet sur GitHub (l'app FreeMilk peut le faire : demande-moi de créer le
-   dépôt et de pousser le code).
-2. Va sur https://railway.app → **Login with GitHub** → **New Project** →
-   **Deploy from GitHub repo** → choisis le dépôt.
-3. Dans l'onglet **Variables** du service, ajoute :
-   - `DISCORD_TOKEN` = le token de l'étape 1
-   - `CLIENT_ID` = l'Application ID
+#### Render (recommandé, gratuit à vie)
+
+1. Va sur https://render.com → **Get Started** → **GitHub** → autorise Render à voir tes
+   dépôts → choisis `discord-setup-bot`.
+2. **New** → **Web Service** → sélectionne le dépôt → Render lit tout seul le fichier
+   `render.yaml` du projet.
+3. Dans **Environment**, remplis les trois variables :
+   - `DISCORD_TOKEN` = le token du bot (étape 1)
+   - `CLIENT_ID` = l'Application ID (étape 1)
    - `GUILD_ID` = l'ID de ton serveur (clic droit sur l'icône du serveur > Copier
      l'identifiant ; active le mode développeur dans Discord : Paramètres > Avancés)
-4. Railway lance `npm start` tout seul. Dans les **Logs**, tu dois voir
-   `Connecté en tant que Setup Bot#1234`.
+4. **Create Web Service**. Render installe et lance le bot. Dans **Logs**, tu dois voir
+   `Connecté en tant que Setup Bot#1234` puis `[commandes] 6 commande(s) enregistrée(s)`.
 
-Autres hébergeurs, si tu préfères :
+**Important, le point faible du gratuit** : Render endort un service gratuit après 15
+minutes sans visite. Le bot se déconnecterait. La parade est gratuite aussi :
 
-- **Render** — crée un *Web Service* depuis le dépôt GitHub, ajoute les mêmes variables
-  et `PORT=3000` (le bot expose alors une page de statut sur ce port).
-- **Fly.io** — `fly launch` puis `fly secrets set DISCORD_TOKEN=… CLIENT_ID=… GUILD_ID=…`
-  (le `Dockerfile` fourni est utilisé automatiquement).
-- **Ton ordinateur** — `npm install && npm start` dans un terminal : le bot s'arrête dès
-  que tu fermes la fenêtre.
+5. Va sur https://uptimerobot.com → **Register for free** → **Add New Monitor** →
+   type **HTTP(s)**, URL = l'adresse de ton service Render (`https://discord-setup-bot-…onrender.com`),
+   intervalle **5 minutes**. Ce ping toutes les 5 minutes empêche la mise en veille : le bot
+   reste en ligne 24 h/24, sans payer.
 
-Ne mets jamais le token dans le dépôt : `.env` est déjà dans `.gitignore`.
+Le projet contient déjà la page de statut que ce ping interroge (elle répond
+`Bot connecté : …`), rien à coder.
+
+#### Autres solutions gratuites
+
+- **Koyeb** (https://koyeb.com) — offre gratuite, déploiement depuis GitHub, mêmes trois
+  variables. Même principe de mise en veille.
+- **DisCloud** (https://discloud.app) — spécialisé bots Discord, gratuit sans carte.
+- **Un vieux PC / un Raspberry Pi à la maison** — `npm install` puis `npm start` : gratuit
+  et sans coupure, mais l'ordinateur doit rester allumé.
+- **Oracle Cloud « Always Free »** — un vrai serveur gratuit à vie, mais l'inscription
+  demande une carte bancaire (aucun débit) et la mise en place est plus technique.
+
+À éviter : Railway (plus d'offre gratuite depuis 2023, il demande une carte), Heroku
+(payant), Replit (les bots n'y tournent plus en continu gratuitement).
+
+Ne mets jamais le token dans le dépôt : `.env` est déjà dans `.gitignore`, et sur
+l'hébergeur il va dans les Variables du service.
 
 ### Étape 4 — Configurer le serveur
 

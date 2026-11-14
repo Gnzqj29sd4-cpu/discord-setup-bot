@@ -1,0 +1,21 @@
+# Déploiement gratuit sur Render (https://render.com).
+# Render lit ce fichier automatiquement quand tu connectes le dépôt GitHub.
+services:
+  - type: web
+    name: discord-setup-bot
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      # À remplir dans Render > Environment (jamais dans ce fichier)
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
