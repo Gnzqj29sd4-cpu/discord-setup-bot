@@ -64,8 +64,24 @@ Boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 ## La traduction
 
-`/traduire` : tu tapes ton texte, tu choisis la langue dans le menu déroulant
-(🇫🇷 🇬🇧 🇪🇸 🇵🇹 🇩🇪 🇷🇺 🇹🇷 🇮🇹 🇸🇦), le bot répond avec la traduction.
+Deux façons, les deux disponibles :
+
+**1. Par drapeau** — le bot ajoute automatiquement 🇫🇷 🇬🇧 🇸🇦 sous chaque message.
+Tu cliques sur le drapeau de la langue voulue, le bot répond avec la traduction en
+réponse au message (auteur, langue détectée, langue cible). Une seule réponse par
+message et par langue, même si plusieurs personnes cliquent.
+
+**2. Par commande** — `/traduire texte:salut langue:English`, avec le menu déroulant
+des 9 langues.
+
+Google est utilisé en premier, MyMemory prend le relais si Google ne répond pas : deux
+services gratuits, sans clé ni compte.
+
+Réglages dans `config.js`, section `flags` : `enabled` (désactiver les drapeaux),
+`languages` (quels drapeaux, par code : `fr`, `en`, `ar`…), `exclude` (salons sans
+drapeaux), `color` (orange `0xff7900`), `maxLength`.
+
+Les drapeaux demandent l'intent **MESSAGE CONTENT** et la permission *Add Reactions*.
 
 ## Personnaliser
 
@@ -87,7 +103,9 @@ Après une modification : relance le bot, puis `/salon`.
 1. https://discord.com/developers/applications → **New Application**.
 2. **General Information** : copie l'**Application ID** → `CLIENT_ID`.
 3. Onglet **Bot** : **Reset Token** → copie le token → `DISCORD_TOKEN`.
-4. Toujours dans **Bot**, active **SERVER MEMBERS INTENT** (rôles à l'arrivée), **Save**.
+4. Toujours dans **Bot**, active **SERVER MEMBERS INTENT** (rôles à l'arrivée) et
+   **MESSAGE CONTENT INTENT** (lecture du texte pour les drapeaux de traduction),
+   puis **Save Changes**.
 
 ### 2. Inviter le bot
 
@@ -129,6 +147,9 @@ npm run invite   # affiche le lien d'invitation
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les rôles à l'arrivée ne marchent pas** : active **SERVER MEMBERS INTENT**.
+- **Les drapeaux n'apparaissent pas** : active **MESSAGE CONTENT INTENT** et vérifie que
+  le bot a la permission *Add Reactions* dans le salon, et que le salon n'est pas dans
+  `flags.exclude`.
 - **Les règles ne sont pas publiées** : le salon `📜・rules` n'existe pas encore — lance
   `/salon` une première fois, il crée puis publie.
 - **`/clip` refuse le lien** : il doit ressembler à un vrai lien

@@ -2,8 +2,9 @@
 
 const { languages } = require('../config');
 
-// Service de traduction public de Google (aucune clé, aucune inscription).
-const ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
+// Services de traduction publics, gratuits, sans clé ni compte.
+const GOOGLE_ENDPOINT = 'https://translate.googleapis.com/translate_a/single';
+const MYMEMORY_ENDPOINT = 'https://api.mymemory.translated.net/get';
 
 /** Coupe un texte long en blocs, sans dépasser la limite envoyée au service. */
 function splitText(text, maxLength = 1800) {
@@ -32,26 +33,53 @@ function splitText(text, maxLength = 1800) {
 }
 
 async function translateChunk(text, target) {
-  const url =
-    `${ENDPOINT}?client=gtx&sl=auto&tl=${encodeURIComponent(target)}` +
-    `&dt=t&q=${encodeURIComponent(text)}`;
+  // 1) Google (auto-détection fiable, gratuit, sans clé)
+  try {
+    const url =
+      `${GOOGLE_ENDPOINT}?client=gtx&sl=auto&tl=${encodeURIComponent(target)}` +
+      `&dt=t&q=${encodeURIComponent(text)}`;
 
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DiscordTranslationBot/1.0)' },
-  });
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DiscordTranslationBot/1.0)' },
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Service de traduction indisponible (HTTP ${response.status})`);
+    if (response.ok) {
+      const data = await response.json();
+      const translated = Array.isArray(data?.[0])
+        ? data[0].map((part) => part?.[0] ?? '').join('')
+        : '';
+      if (translated) {
+        return { translated, detected: typeof data?.[2] === 'string' ? data[2] : null };
+      }
+    }
+  } catch (error) {
+    console.warn('[traduction] Google indisponible :', error.message);
   }
 
-  const data = await response.json();
-  const translated = Array.isArray(data?.[0])
-    ? data[0].map((part) => part?.[0] ?? '').join('')
-    : '';
+  // 2) MyMemory (secours, gratuit, sans clé)
+  try {
+    const url =
+      `${MYMEMORY_ENDPOINT}?q=${encodeURIComponent(text.slice(0, 450))}` +
+      `&langpair=autodetect%7C${encodeURIComponent(target)}`;
 
-  if (!translated) throw new Error('Le service de traduction a renvoyé une réponse vide.');
+    const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (response.ok) {
+      const data = await response.json();
+      const translated = data?.responseData?.translatedText;
+      if (translated && !/MYMEMORY WARNING/i.test(translated)) {
+        const detected = data?.responseData?.detectedLanguage;
+        return {
+          translated,
+          detected: typeof detected === 'string' ? detected : null,
+        };
+      }
+    }
+  } catch (error) {
+    console.warn('[traduction] MyMemory indisponible :', error.message);
+  }
 
-  return { translated, detected: typeof data?.[2] === 'string' ? data[2] : null };
+  throw new Error('Les services de traduction sont indisponibles, réessaie dans un instant.');
 }
 
 /**
