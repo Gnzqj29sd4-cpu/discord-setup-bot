@@ -147,8 +147,25 @@ const categories = [
     access: 'public',
     channels: [
       { name: '💬・general', type: 'text', topic: 'Talk about anything, in English' },
-      { name: '🎬・clips', type: 'text', topic: 'Creator clips — use /clip to publish' },
       { name: '🎓・tutorials', type: 'text', topic: 'Video tutorials' },
+    ],
+  },
+  {
+    // One channel per platform: post the clip in the matching channel.
+    name: '🎬・CLIPS',
+    access: 'public',
+    channels: [
+      { name: '📱・tiktok', type: 'text', topic: 'TikTok clips — use /clip' },
+      { name: '▶️・youtube', type: 'text', topic: 'YouTube clips — use /clip' },
+      { name: '📸・instagram', type: 'text', topic: 'Instagram reels — use /clip' },
+      { name: '🎮・twitch', type: 'text', topic: 'Twitch clips — use /clip' },
+      { name: '🎬・other-clips', type: 'text', topic: 'Any other clip — use /clip' },
+      {
+        name: '🏆・best-clips',
+        type: 'text',
+        access: 'readonly',
+        topic: 'The best clips of the week',
+      },
     ],
   },
   {
@@ -251,7 +268,17 @@ const clips = {
   color: theme.primary,
   footer: 'CORTISOLSCRIPT • CONTENT CREATOR TEAM',
   reactions: ['❤️', '🔥'],
+  // Empty = /clip works in every channel.
   channel: '',
+  // Button label and emoji per platform, detected from the link.
+  platforms: [
+    { match: ['tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'], name: 'TikTok', emoji: '📱' },
+    { match: ['youtube.com', 'youtu.be', 'm.youtube.com'], name: 'YouTube', emoji: '▶️' },
+    { match: ['instagram.com', 'instagr.am'], name: 'Instagram', emoji: '📸' },
+    { match: ['twitch.tv', 'clips.twitch.tv'], name: 'Twitch', emoji: '🎮' },
+    { match: ['x.com', 'twitter.com'], name: 'X', emoji: '🐦' },
+  ],
+  defaultPlatform: { name: 'video', emoji: '▶️' },
 };
 
 module.exports = {

@@ -1,6 +1,6 @@
 # Bot Discord — orange & black
 
-Un bot Discord simple : trois commandes, un serveur qui se crée tout seul en anglais,
+Un bot Discord simple : quatre commandes, un serveur qui se crée tout seul en anglais,
 avec une charte orange et noir. Tout se règle dans **`src/config.js`**.
 
 ## Les commandes
@@ -8,38 +8,50 @@ avec une charte orange et noir. Tout se règle dans **`src/config.js`**.
 | Commande | Effet |
 | --- | --- |
 | `/salon` | Crée les rôles et les salons manquants, puis publie les règles et l'information |
-| `/salon reset:true` | Supprime d'abord les salons de `config.js`, puis tout recrée |
+| `/resetsalon confirmer:true` | Supprime les salons de `config.js` (à relancer avec `/salon` ensuite) |
+| `/clip lien:…` | Publie un clip TikTok, YouTube, Instagram, Twitch, X… |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans **la langue que tu choisis** |
-| `/clip titre:… description:… lien:… image:…` | Publie un clip : miniature, bouton « REGARDER LE CLIP », réactions ❤️ 🔥 |
 
 ## Les salons créés par `/salon`
 
 ```
-📌・INFORMATION     📜・rules    📢・announcements    📋・information   (lecture seule)
-💬・COMMUNITY       💬・general   🎬・clips    🎓・tutorials
-🛡️・STAFF          💼・staff     🚨・logs     (invisible pour les membres)
-🔊・VOICE          🔊・General (vocal)
+📌・INFORMATION   📜・rules   📢・announcements   📋・information   (lecture seule)
+💬・COMMUNITY     💬・general   🎓・tutorials
+🎬・CLIPS         📱・tiktok   ▶️・youtube   📸・instagram   🎮・twitch
+                  🎬・other-clips   🏆・best-clips (lecture seule)
+🛡️・STAFF         💼・staff   🚨・logs   (invisible pour les membres)
+🔊・VOICE         🔊・General (vocal)
 ```
 
-Tous les noms sont en anglais, comme demandé.
+Un salon par plateforme : tu postes le clip TikTok dans `📱・tiktok`, la vidéo YouTube
+dans `▶️・youtube`, etc.
 
-**Publication automatique** : `/salon` poste lui-même, sans doublon :
+**Publication automatique** : `/salon` poste lui-même, sans doublon, l'embed orange
+**📜 Server Rules** (8 règles) + l'embed noir **⚠️ Staff Policy** dans `📜・rules`, et
+l'embed **📋 Information** dans `📋・information`. Si tu relances `/salon`, le bot vérifie
+son footer avant de poster : rien n'est dupliqué.
 
-- dans `📜・rules` — l'embed orange **📜 Server Rules** (les 8 règles) et l'embed noir
-  **⚠️ Staff Policy** (les 4 points) ;
-- dans `📋・information` — l'embed orange **📋 Information** (langue, clips, traduction,
-  support).
+## `/clip` — TikTok et les autres
 
-Si tu relances `/salon`, le bot vérifie le footer de chaque embed avant de poster : rien
-n'est dupliqué, rien n'est écrasé.
+```
+/clip lien:https://vm.tiktok.com/ZMabc123/
+/clip lien:https://youtu.be/xxxx titre:My best goal image:https://…/mini.jpg
+```
+
+- **Le lien est le seul champ obligatoire** ; `titre`, `description` et `image` sont
+  facultatifs.
+- Le lien peut être collé sans `https://` (le bot le rajoute) et avec les balises `< >`
+  de Discord (il les retire).
+- La plateforme est détectée automatiquement depuis le lien : TikTok, YouTube,
+  Instagram, Twitch, X. Le bouton devient **WATCH ON TIKTOK**, **WATCH ON YOUTUBE**, etc.
+- **Miniature TikTok automatique** : sans `image`, le bot va chercher la couverture de la
+  vidéo via l'API oEmbed publique de TikTok (aucune clé, aucun compte).
+- Le clip est publié dans le salon où tu tapes la commande, avec les réactions ❤️ 🔥.
 
 ## Le design orange et noir
 
-La section `theme` de `config.js` :
-
-- `primary` = `0xff5900` (orange) — titres, règles, information, `/clip`, rôle MODERATOR
-  et Server Booster.
-- `dark` = `0x141414` (noir) — embed de la politique du staff.
+Section `theme` de `config.js` : `primary` = `0xff5900` (orange, titres et embeds),
+`dark` = `0x141414` (noir, embed de la politique du staff).
 
 ## Les rôles
 
@@ -54,7 +66,6 @@ Boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 `/traduire` : tu tapes ton texte, tu choisis la langue dans le menu déroulant
 (🇫🇷 🇬🇧 🇪🇸 🇵🇹 🇩🇪 🇷🇺 🇹🇷 🇮🇹 🇸🇦), le bot répond avec la traduction.
-Aucune réaction, aucun drapeau : c'est toi qui décides, à chaque commande.
 
 ## Personnaliser
 
@@ -63,10 +74,9 @@ Tout est dans **`src/config.js`** :
 - `theme` — les deux couleurs.
 - `roles`, `roleGroups`, `accessPresets` — rôles et permissions.
 - `categories` — les catégories et leurs salons.
-- `rules` — le texte des règles et de la politique du staff.
-- `information` — le contenu du salon d'information.
+- `rules`, `information` — les textes publiés automatiquement.
 - `autoRolesOnJoin`, `boosterRole`, `welcome`.
-- `languages`, `translation`, `clips`.
+- `languages`, `translation`, `clips` (plateformes détectées, réactions, footer).
 
 Après une modification : relance le bot, puis `/salon`.
 
@@ -97,12 +107,9 @@ glisse le rôle du bot **tout en haut**.
 (`render.yaml` fait le reste), ajoute les trois variables, puis un monitor
 https://uptimerobot.com toutes les 5 minutes sur l'adresse du service.
 
-La page du service Render affiche `ÉTAT : CONNECTÉ — …` ou l'erreur exacte. Le bot ne
-s'arrête plus en cas d'erreur : il réessaie chaque minute.
-
 ### 4. Configurer le serveur
 
-Sur Discord : `/salon`. C'est tout — rôles, salons, règles et information sont en place.
+Sur Discord : `/salon`. C'est tout.
 
 ## Commandes du projet (terminal)
 
@@ -115,12 +122,16 @@ npm run invite   # affiche le lien d'invitation
 
 ## Dépannage
 
-- **Les commandes n'apparaissent pas** : le bot n'est pas connecté (regarde les logs),
-  ou `CLIENT_ID` / `GUILD_ID` manquent.
+- **Les commandes n'apparaissent pas** : vérifie `GUILD_ID` dans les secrets. Avec lui,
+  les commandes du serveur apparaissent en quelques secondes et les anciennes commandes
+  globales sont effacées automatiquement. Sans lui, il faut attendre jusqu'à 1 h.
+  Ferme et rouvre Discord après un redémarrage : le client garde la liste en cache.
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les rôles à l'arrivée ne marchent pas** : active **SERVER MEMBERS INTENT**.
 - **Les règles ne sont pas publiées** : le salon `📜・rules` n'existe pas encore — lance
   `/salon` une première fois, il crée puis publie.
-- **`/clip` refuse les liens** : le lien et l'image doivent commencer par `http://` ou
-  `https://`.
+- **`/clip` refuse le lien** : il doit ressembler à un vrai lien
+  (`tiktok.com/…`, `youtu.be/…`). Un texte sans point est refusé.
+- **Pas de miniature TikTok** : TikTok ne répond pas toujours à l'API oEmbed ; passe
+  `image:` avec l'URL de ta couverture.

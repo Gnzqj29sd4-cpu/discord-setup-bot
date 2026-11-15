@@ -23,6 +23,8 @@ function loadCommandData() {
 /**
  * Enregistre les commandes sur Discord.
  * Avec `guildId`, elles apparaissent tout de suite ; sans, jusqu'à 1 h.
+ * Quand on enregistre sur un serveur, les commandes globales sont vidées :
+ * sinon d'anciennes commandes supprimées du code restent visibles.
  */
 async function registerCommands({ token, clientId, guildId }) {
   const commands = loadCommandData();
@@ -30,6 +32,10 @@ async function registerCommands({ token, clientId, guildId }) {
 
   if (guildId) {
     await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
+    // Nettoie les éventuelles commandes globales d'une ancienne version.
+    await rest.put(Routes.applicationCommands(clientId), { body: [] }).catch((error) => {
+      console.warn('[commandes] nettoyage global impossible :', error.message);
+    });
   } else {
     await rest.put(Routes.applicationCommands(clientId), { body: commands });
   }
