@@ -18,13 +18,15 @@ avec une charte orange et noir. Tout se règle dans **`src/config.js`**.
 📌・INFORMATION   📜・rules   📢・announcements   📋・information   (lecture seule)
 💬・COMMUNITY     💬・general   🎓・tutorials
 🎬・CLIPS         📱・tiktok   ▶️・youtube   📸・instagram   🎮・twitch
-                  🎬・other-clips   🏆・best-clips (lecture seule)
+                  🐦・x-clips   🟣・kick   📘・facebook   👻・snapchat   🟠・reddit
+                  😂・funny-clips   💥・edits   🎵・music-clips   🏀・sports-clips
+                  🕹️・gaming-clips   🎬・other-clips   🏆・best-clips (lecture seule)
 🛡️・STAFF         💼・staff   🚨・logs   (invisible pour les membres)
 🔊・VOICE         🔊・General (vocal)
 ```
 
-Un salon par plateforme : tu postes le clip TikTok dans `📱・tiktok`, la vidéo YouTube
-dans `▶️・youtube`, etc.
+**16 salons de clips** au total, un par plateforme et par thème : tu postes le clip TikTok
+dans `📱・tiktok`, la vidéo YouTube dans `▶️・youtube`, un edit dans `💥・edits`, etc.
 
 **Publication automatique** : `/salon` poste lui-même, sans doublon, l'embed orange
 **📜 Server Rules** (8 règles) + l'embed noir **⚠️ Staff Policy** dans `📜・rules`, et
@@ -43,7 +45,8 @@ son footer avant de poster : rien n'est dupliqué.
 - Le lien peut être collé sans `https://` (le bot le rajoute) et avec les balises `< >`
   de Discord (il les retire).
 - La plateforme est détectée automatiquement depuis le lien : TikTok, YouTube,
-  Instagram, Twitch, X. Le bouton devient **WATCH ON TIKTOK**, **WATCH ON YOUTUBE**, etc.
+  Instagram, Twitch, Kick, Facebook, Snapchat, Reddit, X. Le bouton devient
+  **WATCH ON TIKTOK**, **WATCH ON YOUTUBE**, etc.
 - **Miniature TikTok automatique** : sans `image`, le bot va chercher la couverture de la
   vidéo via l'API oEmbed publique de TikTok (aucune clé, aucun compte).
 - Le clip est publié dans le salon où tu tapes la commande, avec les réactions ❤️ 🔥.
