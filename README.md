@@ -131,6 +131,7 @@ messages, et les nouveaux membres reçoivent leur rôle automatiquement.
 | `/traduire texte:… langue:🇬🇧 English` | Traduit un texte |
 | Clic long sur un message > Applications > **Traduire le message** | Traduit ce message |
 | `/tuto ajouter nom:… titre:… description:… video:…` | Crée un salon tutoriel avec sa présentation |
+| `/clip titre:… description:… lien:… image:…` | Publie un clip : miniature, bouton « Regarder le clip », réactions ❤️ 🔥 |
 
 ## Traduction par drapeaux
 

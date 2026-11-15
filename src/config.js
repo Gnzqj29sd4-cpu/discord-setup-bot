@@ -558,6 +558,19 @@ const welcome = {
   color: 0x2ecc71,
 };
 
+// -----------------------------------------------------------------------------
+//  11. CLIPS (/clip)
+//  Publie un clip avec sa miniature, un bouton « Regarder » et des réactions.
+// -----------------------------------------------------------------------------
+const clips = {
+  color: 0xff5900,
+  footer: 'CORTISOLSCRIPT • CONTENT CREATOR TEAM',
+  // Réactions ajoutées automatiquement après publication
+  reactions: ['❤️', '🔥'],
+  // Salon où la commande est autorisée (nom exact). Vide = tous les salons.
+  channel: '',
+};
+
 module.exports = {
   roles,
   roleGroups,
@@ -570,4 +583,5 @@ module.exports = {
   boosterRole,
   panel,
   welcome,
+  clips,
 };
