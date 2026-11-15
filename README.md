@@ -81,6 +81,28 @@ Le projet contient déjà la page de statut que ce ping interroge (elle répond
 Ne mets jamais le token dans le dépôt : `.env` est déjà dans `.gitignore`, et sur
 l'hébergeur il va dans les Variables du service.
 
+### Plan B : faire tourner le bot depuis GitHub (aucun compte à créer)
+
+Si Render refuse de démarrer, GitHub peut héberger le bot lui-même grâce au fichier
+`.github/workflows/bot.yml` déjà présent. Il faut que le dépôt soit **public**
+(Actions est alors gratuit sans limite de minutes ; en privé, 2 000 minutes par mois,
+soit environ 33 heures, ce qui ne suffit pas pour 24 h/24).
+
+1. Dépôt GitHub > **Settings** > **General** > tout en bas, **Change visibility** >
+   **Make public**.
+2. Toujours dans **Settings** > **Secrets and variables** > **Actions** >
+   **New repository secret**, crée les trois secrets :
+   - `DISCORD_TOKEN`
+   - `CLIENT_ID`
+   - `GUILD_ID`
+3. Onglet **Actions** > **Bot Discord** > **Run workflow**.
+4. Le bot démarre dans la minute. Chaque exécution dure 6 heures, puis la suivante
+   reprend automatiquement (toutes les 6 heures).
+
+Limite à connaître : entre deux exécutions il peut y avoir quelques minutes de coupure,
+et GitHub désactive les workflows planifiés après 60 jours sans commit. Pour un service
+sans aucune coupure, Render (ou un petit serveur) reste préférable.
+
 ### Étape 4 — Configurer le serveur
 
 Sur Discord, en tant qu'admin du serveur :
