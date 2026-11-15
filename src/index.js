@@ -6,14 +6,23 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const { registerCommands } = require('./lib/commands');
+const status = require('./lib/status');
+
+// Le serveur de diagnostic démarre AVANT tout le reste : même si le bot ne peut
+// pas se connecter, la page reste consultable pour savoir pourquoi.
+status.start();
 
 const token = process.env.DISCORD_TOKEN;
-if (!token) {
-  console.error(
-    'DISCORD_TOKEN manquant : copie .env.example en .env et colle le token du bot (portail développeur Discord).',
-  );
-  process.exit(1);
-}
+const clientId = process.env.CLIENT_ID;
+const guildId = process.env.GUILD_ID;
+
+// Rapport des variables, visible sur la page de diagnostic (jamais le token).
+status.setEnvReport({
+  DISCORD_TOKEN: token ? `défini (${token.length} caractères)` : 'MANQUANT',
+  CLIENT_ID: clientId || 'MANQUANT',
+  GUILD_ID: guildId || 'vide (commandes globales, ~1 h d\'attente)',
+  PORT: process.env.PORT || 'non défini',
+});
 
 const client = new Client({
   intents: [
@@ -65,45 +74,23 @@ process.on('unhandledRejection', (error) => {
   console.error('[unhandledRejection]', error);
 });
 
-// --- Petit serveur HTTP (facultatif) ------------------------------------------
-// Certains hébergeurs gratuits (Render, Koyeb…) n'acceptent que des « services
-// web », qui doivent écouter sur un port. Il ne sert qu'à répondre « OK ».
-if (process.env.PORT) {
-  const http = require('node:http');
-  const server = http.createServer((request, response) => {
-    response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-    response.end(
-      client.isReady()
-        ? `Bot connecté : ${client.user.tag} (${client.guilds.cache.size} serveur(s))`
-        : 'Bot en cours de connexion…',
-    );
-  });
-
-  server.listen(Number(process.env.PORT), () => {
-    console.log(`[web] page de statut sur le port ${process.env.PORT}`);
-  });
-}
-
-// Enregistre les commandes à chaque démarrage : plus besoin de `npm run deploy`
-// quand le bot tourne sur un hébergeur. Échec non bloquant (le bot démarre quand même).
+// Enregistre les commandes à chaque connexion : plus besoin de `npm run deploy`
+// quand le bot tourne sur un hébergeur. Échec non bloquant.
 async function deployCommands() {
-  const clientId = process.env.CLIENT_ID;
   if (!clientId) {
-    console.warn(
-      '[commandes] CLIENT_ID absent de .env : les commandes ne sont pas enregistrées automatiquement.',
-    );
+    console.warn('[commandes] CLIENT_ID absent : commandes non enregistrées.');
     return;
   }
 
   try {
-    const { count, guildId } = await registerCommands({
+    const { count, guildId: registeredOn } = await registerCommands({
       token,
       clientId,
-      guildId: process.env.GUILD_ID,
+      guildId,
     });
     console.log(
-      guildId
-        ? `[commandes] ${count} commande(s) enregistrée(s) sur le serveur ${guildId}.`
+      registeredOn
+        ? `[commandes] ${count} commande(s) enregistrée(s) sur le serveur ${registeredOn}.`
         : `[commandes] ${count} commande(s) enregistrée(s) globalement.`,
     );
   } catch (error) {
@@ -112,13 +99,40 @@ async function deployCommands() {
 }
 
 client.once('ready', () => {
+  status.setBot(client);
+  console.log(`[bot] connecté : ${client.user.tag} (${client.guilds.cache.size} serveur(s))`);
   deployCommands();
 });
 
-client.login(token).catch((error) => {
-  console.error('Connexion impossible :', error.message);
-  console.error(
-    'Vérifie que le token dans .env est correct, que les options "SERVER MEMBERS INTENT" et "MESSAGE CONTENT INTENT" sont activées (Bot > Privileged Gateway Intents) et que le bot est invité sur le serveur.',
-  );
-  process.exit(1);
+// --- Connexion avec nouvelles tentatives --------------------------------------
+// Un token invalide, des intents désactivés ou un réseau capricieux ne doivent
+// pas tuer le service : on réessaie toutes les minutes et la page de diagnostic
+// explique la cause. Sur un hébergeur, un processus qui sort redémarre en boucle
+// et ne sert jamais sa page — c'était le problème du premier déploiement.
+let retryDelay = 60 * 1000;
+
+function connect() {
+  if (!token) {
+    status.setError(
+      new Error(
+        'DISCORD_TOKEN manquant : ajoute-le dans les variables d\'environnement du service.',
+      ),
+    );
+    return;
+  }
+
+  client.login(token).catch((error) => {
+    status.setError(error);
+    setTimeout(connect, retryDelay);
+  });
+}
+
+client.on('disconnect', () => {
+  console.warn('[bot] déconnecté de Discord, reconnexion automatique…');
 });
+
+client.on('error', (error) => {
+  console.error('[bot] erreur :', error.message);
+});
+
+connect();

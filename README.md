@@ -196,6 +196,20 @@ deploy` n'est utile que pour les rafraîchir sans lancer le bot.
 
 ## Dépannage
 
+### La page de diagnostic (à ouvrir en premier)
+
+Ouvre l'adresse de ton service Render (`https://discord-setup-bot-xxxx.onrender.com`) :
+elle affiche l'état réel du bot, sans passer par les logs.
+
+- `ÉTAT : CONNECTÉ — MonBot#1234` → tout va bien, tape `/setup tout` dans Discord.
+- `ÉTAT : NON CONNECTÉ` → la page donne l'erreur exacte et le conseil correspondant
+  (token invalide, intents désactivés, variable manquante…).
+- Elle liste aussi les variables vues par le service, pour repérer un `GUILD_ID` vide
+  ou un token non défini.
+
+Le bot ne s'arrête plus en cas d'erreur : il réessaie toutes les minutes, donc la page
+reste consultable et il repart tout seul dès que tu corriges la variable.
+
 - **Les commandes n'apparaissent pas** : vérifie `CLIENT_ID` et `GUILD_ID` dans les
   variables, puis redémarre le service. Sur un serveur, l'affichage est immédiat.
 - **« Missing Permissions »** : le rôle du bot est trop bas dans la hiérarchie, ou il
