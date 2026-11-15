@@ -8,7 +8,10 @@ const {
 } = require('discord.js');
 const { createRoles, applyHierarchy } = require('../lib/roles');
 const { createChannels, deleteConfiguredChannels } = require('../lib/channels');
-const { theme } = require('../config');
+const { theme, categories } = require('../config');
+
+/** Nombre total de salons (hors catégories) décrits dans config.js. */
+const totalChannels = categories.reduce((sum, category) => sum + category.channels.length, 0);
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,8 +21,16 @@ module.exports = {
     .setDMPermission(false)
     .addBooleanOption((option) =>
       option
+        .setName('installer')
+        .setDescription(
+          `Install all ${totalChannels} clip channels from scratch (deletes the configured ones first)`,
+        )
+        .setRequired(false),
+    )
+    .addBooleanOption((option) =>
+      option
         .setName('reset')
-        .setDescription('Delete the configured channels first, then recreate them')
+        .setDescription('Same as installer: delete the configured channels, then recreate them')
         .setRequired(false),
     ),
 
@@ -27,10 +38,14 @@ module.exports = {
     const guild = interaction.guild;
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
+    const install =
+      interaction.options.getBoolean('installer') === true ||
+      interaction.options.getBoolean('reset') === true;
+
     const lines = [];
 
     try {
-      if (interaction.options.getBoolean('reset') === true) {
+      if (install) {
         const deleted = await deleteConfiguredChannels(guild, (line) => lines.push(line));
         lines.push(`Channels deleted: ${deleted.length}`);
       }
@@ -51,6 +66,12 @@ module.exports = {
       lines.push(
         `Channels: ${channelsResult.created.length} created, ${channelsResult.skipped.length} already there.`,
       );
+
+      if (channelsResult.created.length + channelsResult.skipped.length < totalChannels) {
+        lines.push(
+          `⚠️ Expected ${totalChannels} channels. Run \`/salon installer:true\` to start over.`,
+        );
+      }
     } catch (error) {
       lines.push(`❌ ${error.message}`);
       if (error.code === 50013) {
@@ -59,7 +80,7 @@ module.exports = {
     }
 
     const embed = new EmbedBuilder()
-      .setTitle('Server setup complete')
+      .setTitle(install ? 'All channels installed' : 'Server setup complete')
       .setColor(theme.primary)
       .setDescription(lines.slice(-12).join('\n') || 'Nothing to do.');
 

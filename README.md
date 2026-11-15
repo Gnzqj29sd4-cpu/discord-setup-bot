@@ -9,7 +9,7 @@ la traduction par drapeau, et une charte orange et noir. Tout se règle dans
 | Commande | Effet |
 | --- | --- |
 | `/salon` | Crée les rôles et les 16 salons de clips manquants |
-| `/salon reset:true` | Supprime les salons de `config.js`, puis les recrée |
+| `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
 | `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
@@ -112,7 +112,8 @@ https://uptimerobot.com toutes les 5 minutes sur l'adresse du service.
 
 ### 4. Configurer le serveur
 
-Sur Discord : `/salon`. C'est tout — les 16 salons de clips apparaissent.
+Sur Discord : `/salon`. C'est tout — les 16 salons de clips apparaissent. Si des salons
+doivent être remis à zéro, `/salon installer:true`.
 
 ## Commandes du projet (terminal)
 
@@ -130,7 +131,9 @@ npm run invite   # affiche le lien d'invitation
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les anciens salons sont toujours là** : `/salon` n'en supprime aucun. Lance
-  `/resetsalon confirmer:true` puis `/salon` pour repartir des 16 salons de clips seuls.
+  `/salon installer:true` : il supprime les salons de `config.js` puis réinstalle les 16
+  salons de clips. Pour les salons qui ne sont plus dans `config.js` (ancien général,
+  staff, règles…), supprime-les à la main.
 - **La traduction par drapeau ne marche pas** : active **MESSAGE CONTENT INTENT** dans le
   portail Discord (onglet Bot), puis redémarre le bot.
 - **`/clip` refuse le lien** : il doit ressembler à un vrai lien (`tiktok.com/…`,
