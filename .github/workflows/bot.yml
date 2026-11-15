@@ -6,15 +6,20 @@ name: Bot Discord
 # Settings > Secrets and variables > Actions > New repository secret.
 
 on:
+  # Un push sur main = mise à jour du bot : l'ancienne exécution est remplacée.
+  push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     # Toutes les 6 heures
     - cron: '0 */6 * * *'
 
 # Une seule exécution à la fois : deux bots connectés = double réponse.
+# cancel-in-progress : un nouveau lancement remplace proprement l'ancien,
+# ce qui sert de « redémarrer le bot » après une modification du code.
 concurrency:
   group: bot-discord
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   run:
@@ -29,6 +34,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Vérifier les secrets
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        run: |
+          if [ -z "$DISCORD_TOKEN" ]; then
+            echo "::error::Secret DISCORD_TOKEN manquant. Settings > Secrets and variables > Actions > New repository secret."
+            exit 1
+          fi
+          if [ -z "$CLIENT_ID" ]; then
+            echo "::error::Secret CLIENT_ID manquant. Settings > Secrets and variables > Actions > New repository secret."
+            exit 1
+          fi
+          echo "Secrets présents : DISCORD_TOKEN (${#DISCORD_TOKEN} caractères), CLIENT_ID=$CLIENT_ID"
 
       - name: Installer les dépendances
         run: npm install
