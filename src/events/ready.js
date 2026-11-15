@@ -6,6 +6,6 @@ module.exports = {
 
   execute(client) {
     console.log(`Connecté en tant que ${client.user.tag} (${client.guilds.cache.size} serveur(s)).`);
-    console.log('Commandes disponibles : /setup, /panel');
+    console.log('Commandes disponibles : /setup, /traduire, /clip');
   },
 };
