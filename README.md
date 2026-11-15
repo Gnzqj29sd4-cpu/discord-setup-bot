@@ -64,9 +64,12 @@ Boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 ## La traduction
 
-**Par drapeau, choisi par toi.** Le bot ne met plus aucun drapeau sous les messages.
-C'est toi qui choisis la langue : tu appuies sur le bouton emoji à côté du message,
-tu choisis 🇫🇷 🇬🇧 🇸🇦… et le bot répond avec la traduction, sous le message.
+**C'est toi qui choisis la langue.** Le bot ne pose **aucun drapeau** sous les messages :
+rien n'apparaît en dessous. Tu appuies sur le bouton emoji à côté du message, tu choisis
+ton pays (🇫🇷 🇬🇧 🇸🇦…), et le bot répond avec la traduction.
+
+**Le message du bot se supprime tout seul au bout de 15 secondes**, pour ne pas encombrer
+le salon. Tu peux recliquer le même drapeau juste après.
 
 Toutes les langues sont reconnues : 🇫🇷 fr, 🇬🇧 en, 🇪🇸 es, 🇵🇹 pt, 🇩🇪 de, 🇷🇺 ru, 🇹🇷 tr,
 🇮🇹 it, 🇸🇦 ar. Si plusieurs personnes cliquent le même drapeau en même temps, une seule
@@ -78,9 +81,11 @@ Google est utilisé en premier, MyMemory prend le relais si Google ne répond pa
 services gratuits, sans clé ni compte.
 
 Réglages dans `config.js`, section `flags` : `enabled`, `languages` (quelles langues sont
-reconnues, par code), `color` (orange `0xff7900`), `maxLength`.
+reconnues, par code), `deleteAfterSeconds` (15 par défaut, `0` pour garder le message),
+`color` (orange `0xff7900`), `maxLength`.
 
-La traduction demande l'intent **MESSAGE CONTENT** (portail Discord > Bot).
+La traduction demande l'intent **MESSAGE CONTENT** (portail Discord > Bot) et la
+permission *Manage Messages* pour que le bot puisse supprimer sa propre réponse.
 
 ## Personnaliser
 

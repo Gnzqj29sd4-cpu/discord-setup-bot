@@ -278,6 +278,9 @@ const flags = {
   languages: ['fr', 'en', 'es', 'pt', 'de', 'ru', 'tr', 'it', 'ar'],
   // Longest message translated (MyMemory caps around 500 characters).
   maxLength: 450,
+  // The bot's translation message deletes itself after this many seconds
+  // (0 = keep it).
+  deleteAfterSeconds: 15,
   footer: 'Flag-Reaction Feature',
 };
 

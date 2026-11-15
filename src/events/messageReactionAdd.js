@@ -61,6 +61,7 @@ module.exports = {
     try {
       const result = await translate(message.content, language.code, flags.maxLength);
 
+      const seconds = flags.deleteAfterSeconds;
       const embed = new EmbedBuilder()
         .setColor(flags.color)
         .setAuthor({
@@ -72,17 +73,31 @@ module.exports = {
             `> ${result.text.slice(0, 4000)}`,
         )
         .setFooter({
-          text: `Translation requested by ${user.username} • ${flags.footer}`,
+          text:
+            `${flags.footer} • requested by ${user.username}` +
+            (seconds > 0 ? ` • deletes in ${seconds}s` : ''),
           iconURL: user.displayAvatarURL(),
         })
         .setTimestamp();
 
-      await message.reply({
+      const reply = await message.reply({
         embeds: [embed],
         allowedMentions: { repliedUser: false },
       });
+
+      // Le message du bot disparaît tout seul, pour ne pas encombrer le salon.
+      if (seconds > 0) {
+        setTimeout(() => {
+          reply.delete().catch((error) => {
+            console.warn('[flags] delete failed:', error.message);
+          });
+          // Déverrouille : on peut recliquer le même drapeau tout de suite.
+          recent.delete(key);
+        }, seconds * 1000);
+      }
     } catch (error) {
       console.warn('[flags] translation failed:', error.message);
+      recent.delete(key);
     }
   },
 };
