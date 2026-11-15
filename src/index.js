@@ -28,18 +28,8 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
-    // Obligatoire pour lire le texte des messages (drapeaux de traduction).
-    GatewayIntentBits.MessageContent,
   ],
-  partials: [
-    Partials.GuildMember,
-    Partials.User,
-    Partials.Message,
-    Partials.Channel,
-    Partials.Reaction,
-  ],
+  partials: [Partials.GuildMember, Partials.User],
 });
 
 client.commands = new Collection();

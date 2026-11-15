@@ -1,248 +1,124 @@
-# Discord Setup Bot
+# Bot Discord — simple
 
-Bot Discord qui crée **tous les rôles et tous les salons** du serveur en une commande,
-traduit les messages d'un clic sur un drapeau, et gère les salons tutoriels avec leurs vidéos.
+Un bot Discord simple : quelques commandes, un serveur qui se crée tout seul.
+Rôles, salons et couleurs se règlent dans **`src/config.js`**.
 
-## Mettre le bot sur Discord : la marche à suivre
-
-Quatre étapes, **sans rien payer**. La 1 et la 2 se font dans le navigateur du téléphone,
-la 3 sur un hébergeur gratuit (Render) relié à ce dépôt GitHub, la 4 sur Discord.
-
-### Étape 1 — Créer l'application et récupérer les identifiants
-
-1. Ouvre https://discord.com/developers/applications (connecte-toi avec ton compte
-   Discord ; sur téléphone, active « Version pour ordinateur » dans le menu du navigateur).
-2. **New Application** → donne-lui un nom (ex. `Setup Bot`) → **Create**.
-3. Onglet **General Information** : copie l'**Application ID** (un long nombre).
-   C'est ton `CLIENT_ID`.
-4. Onglet **Bot** :
-   - **Reset Token** → **Copy** → garde ce token secret, c'est ton `DISCORD_TOKEN`.
-   - Descends à **Privileged Gateway Intents** et active **SERVER MEMBERS INTENT** et
-     **MESSAGE CONTENT INTENT** → **Save Changes**.
-   (Sans ces deux interrupteurs : pas de rôles à l'arrivée, pas de traduction.)
-
-### Étape 2 — Inviter le bot sur ton serveur
-
-Onglet **OAuth2 > URL Generator** :
-
-1. Dans **Scopes**, coche `bot` et `applications.commands`.
-2. Dans **Bot Permissions**, coche **Administrator**.
-3. Copie l'**URL** générée en bas, ouvre-la, choisis ton serveur → **Autoriser**.
-
-Le bot apparaît dans la liste des membres, hors ligne pour l'instant.
-
-Ensuite, sur Discord : **Paramètres du serveur > Rôles** et glisse le rôle du bot
-**tout en haut** de la liste (au-dessus de OWNER). Sans ça, Discord refuse qu'il crée
-et réordonne les rôles.
-
-### Étape 3 — Mettre le bot en ligne (gratuit)
-
-Le bot doit tourner 24 h/24 : il ne peut pas tourner dans FreeMilk, il lui faut un petit
-serveur. Les options ci-dessous sont **gratuites, sans carte bancaire**.
-
-#### Render (recommandé, gratuit à vie)
-
-1. Va sur https://render.com → **Get Started** → **GitHub** → autorise Render à voir tes
-   dépôts → choisis `discord-setup-bot`.
-2. **New** → **Web Service** → sélectionne le dépôt → Render lit tout seul le fichier
-   `render.yaml` du projet.
-3. Dans **Environment**, remplis les trois variables :
-   - `DISCORD_TOKEN` = le token du bot (étape 1)
-   - `CLIENT_ID` = l'Application ID (étape 1)
-   - `GUILD_ID` = l'ID de ton serveur (clic droit sur l'icône du serveur > Copier
-     l'identifiant ; active le mode développeur dans Discord : Paramètres > Avancés)
-4. **Create Web Service**. Render installe et lance le bot. Dans **Logs**, tu dois voir
-   `Connecté en tant que Setup Bot#1234` puis `[commandes] 6 commande(s) enregistrée(s)`.
-
-**Important, le point faible du gratuit** : Render endort un service gratuit après 15
-minutes sans visite. Le bot se déconnecterait. La parade est gratuite aussi :
-
-5. Va sur https://uptimerobot.com → **Register for free** → **Add New Monitor** →
-   type **HTTP(s)**, URL = l'adresse de ton service Render (`https://discord-setup-bot-…onrender.com`),
-   intervalle **5 minutes**. Ce ping toutes les 5 minutes empêche la mise en veille : le bot
-   reste en ligne 24 h/24, sans payer.
-
-Le projet contient déjà la page de statut que ce ping interroge (elle répond
-`Bot connecté : …`), rien à coder.
-
-#### Autres solutions gratuites
-
-- **Koyeb** (https://koyeb.com) — offre gratuite, déploiement depuis GitHub, mêmes trois
-  variables. Même principe de mise en veille.
-- **DisCloud** (https://discloud.app) — spécialisé bots Discord, gratuit sans carte.
-- **Un vieux PC / un Raspberry Pi à la maison** — `npm install` puis `npm start` : gratuit
-  et sans coupure, mais l'ordinateur doit rester allumé.
-- **Oracle Cloud « Always Free »** — un vrai serveur gratuit à vie, mais l'inscription
-  demande une carte bancaire (aucun débit) et la mise en place est plus technique.
-
-À éviter : Railway (plus d'offre gratuite depuis 2023, il demande une carte), Heroku
-(payant), Replit (les bots n'y tournent plus en continu gratuitement).
-
-Ne mets jamais le token dans le dépôt : `.env` est déjà dans `.gitignore`, et sur
-l'hébergeur il va dans les Variables du service.
-
-### Plan B : faire tourner le bot depuis GitHub (aucun compte à créer)
-
-Si Render refuse de démarrer, GitHub peut héberger le bot lui-même grâce au fichier
-`.github/workflows/bot.yml` déjà présent. Il faut que le dépôt soit **public**
-(Actions est alors gratuit sans limite de minutes ; en privé, 2 000 minutes par mois,
-soit environ 33 heures, ce qui ne suffit pas pour 24 h/24).
-
-1. Dépôt GitHub > **Settings** > **General** > tout en bas, **Change visibility** >
-   **Make public**.
-2. Toujours dans **Settings** > **Secrets and variables** > **Actions** >
-   **New repository secret**, crée les trois secrets :
-   - `DISCORD_TOKEN`
-   - `CLIENT_ID`
-   - `GUILD_ID`
-3. Onglet **Actions** > **Bot Discord** > **Run workflow**.
-4. Le bot démarre dans la minute. Chaque exécution dure 6 heures, puis la suivante
-   reprend automatiquement (toutes les 6 heures).
-
-Limite à connaître : entre deux exécutions il peut y avoir quelques minutes de coupure,
-et GitHub désactive les workflows planifiés après 60 jours sans commit. Pour un service
-sans aucune coupure, Render (ou un petit serveur) reste préférable.
-
-### Étape 4 — Configurer le serveur
-
-Sur Discord, en tant qu'admin du serveur :
-
-1. `/setup tout` → crée les rôles, remet la hiérarchie, crée toutes les catégories, tous
-   les salons et les 10 salons tutoriels avec leur présentation.
-2. `/panel langues` → pose le menu de choix de langue dans `🌍・choisir-sa-langue`.
-3. `/panel verification` → pose le bouton de vérification dans `✅・vérification`.
-
-C'est tout : le serveur est prêt, les drapeaux de traduction apparaissent sous les
-messages, et les nouveaux membres reçoivent leur rôle automatiquement.
-
-## Ce que fait le bot
+## Les commandes
 
 | Commande | Effet |
 | --- | --- |
-| `/setup tout` | Rôles + hiérarchie + salons + tutoriels |
-| `/setup roles` | Crée seulement les rôles manquants + remet la hiérarchie |
-| `/setup salons` | Crée seulement les catégories et les salons manquants |
-| `/setup tutos` | Crée les salons tutoriels et poste leur présentation |
-| `/setup hierarchie` | Remet les rôles dans l'ordre de `src/config.js` |
-| `/setup reset confirmer:true` | Supprime **uniquement** les salons listés dans `src/config.js` |
-| `/panel langues` | Envoie le menu de choix de langue (rôle automatique) |
-| `/panel verification` | Envoie le bouton « Je valide les règles » |
-| `/langue langue:Français` | Enregistre ta langue (rôle + traduction par défaut) |
-| `/traduire texte:… langue:🇬🇧 English` | Traduit un texte |
-| Clic long sur un message > Applications > **Traduire le message** | Traduit ce message |
-| `/tuto ajouter nom:… titre:… description:… video:…` | Crée un salon tutoriel avec sa présentation |
+| `/setup` | Crée les rôles et les salons manquants (ne supprime rien) |
+| `/setup reset:true` | Supprime d'abord les salons de `config.js`, puis les recrée |
+| `/traduire texte:salut langue:English` | Traduit ton texte dans **la langue que tu choisis** |
 | `/clip titre:… description:… lien:… image:…` | Publie un clip : miniature, bouton « Regarder le clip », réactions ❤️ 🔥 |
 
-## Traduction par drapeaux
+C'est tout. Trois commandes, pas de menu, pas de salon spécial.
 
-Le bot pose un drapeau par langue sous chaque message des salons autorisés :
+## La traduction
 
-🇫🇷 🇬🇧 🇪🇸 🇵🇹 🇩🇪 🇷🇺 🇹🇷 🇮🇹 🇸🇦
+Tu écris `/traduire`, tu tapes ton texte, tu choisis la langue dans le menu déroulant
+(🇫🇷 Français, 🇬🇧 English, 🇪🇸 Español, 🇵🇹 Português, 🇩🇪 Deutsch, 🇷🇺 Русский, 🇹🇷 Türkçe,
+🇮🇹 Italiano, 🇸🇦 العربية). Le bot répond avec la traduction dans un embed.
 
-Un clic sur le drapeau de la France traduit le message en **français**, un clic sur le
-drapeau anglais en **anglais**, et ainsi de suite. La traduction arrive en réponse au
-message, avec le texte d'origine et la langue détectée.
+Exemple : `/traduire texte:salut langue:English` → **hi**.
 
-Aucun salon spécial n'est nécessaire : ça marche dans tous les salons texte, sauf ceux
-listés dans `translation.exclude` (`📜・règles`, annonces, logs…). Pour limiter à
-certains salons, remplis `translation.channels` dans `src/config.js`.
+Aucune réaction, aucun drapeau sous les messages : c'est toi qui décides, à chaque
+commande. La traduction utilise le service public de Google, sans clé et sans compte.
 
-Réglages dans `src/config.js`, section `translation` :
+## Les salons créés par `/setup`
 
-- `flagsUnderMessages` — `false` pour désactiver les drapeaux (il reste `/traduire` et
-  le menu contextuel).
-- `channels` / `exclude` — où les drapeaux apparaissent.
-- `defaultLanguage` — langue du menu contextuel et de `/traduire`.
-- `maxLength` — longueur maximale traduite.
+```
+📢・INFORMATION     📜・règles (lecture seule)   📢・annonces (lecture seule)
+💬・COMMUNAUTÉ      💬・général   🎬・clips   🎓・tutoriels
+🛡️・STAFF          💼・staff     🚨・logs      (invisible pour les membres)
+🔊・VOCAL          🔊・Général (vocal)
+```
 
-La traduction utilise le service public de Google (aucune clé, aucune inscription).
-Le résultat est mis en cache : plusieurs clics sur le même drapeau = un seul appel.
+Les rôles : OWNER, ADMIN, MODERATOR, Manager, CONTENT MANAGER, SUPPORT-LVL1/2/3,
+TEST-SUPPORTER, SUPPORTER, Security, STREAMER, CREATOR LVL1/2/3, TEST CREATOR, CC,
+OG CUSTOMER, Server Booster, member.
 
-## Salons tutoriels
-
-`/setup tutos` crée la catégorie `🎥・TUTORIELS` et un salon par tutoriel, avec dans
-chaque salon une **présentation** (titre, explication, étapes, vidéo) postée par le bot.
-La base fournie compte 10 salons : `📥・installation`, `⚙️・configuration`,
-`🚀・premiere-utilisation`, `⌨️・commandes`, `🎨・personnalisation`,
-`🔌・modules-et-plugins`, `🔄・mise-a-jour`, `🛠️・depannage`, `💾・sauvegarde`, `❓・faq`.
-Les vidéos sont vides au départ : remplis-les quand tu les as.
-
-Pour ajouter un tutoriel :
-
-- **rapide** : `/tuto ajouter` avec le nom du salon, le titre, la description, le lien
-  de la vidéo et les étapes (`Installer | Configurer | Lancer`).
-- **en série** : copie `tutorials.example.json` en `tutorials.json` à la racine du
-  projet, remplis la liste (un objet par salon : `name`, `title`, `description`, `video`,
-  `image`, `steps`), puis relance `/setup tutos`. Quand `tutorials.json` existe, c'est lui
-  qui est utilisé à la place de la liste de `src/config.js` — pratique pour 20, 50 ou
-  80 tutoriels.
-
-Le lien vidéo est posté en clair pour que Discord affiche le lecteur dans le salon.
-`image` affiche une miniature.
-
-## Automatismes
-
-- À l'arrivée d'un membre : rôle **Unverified** + message de bienvenue dans `👋・bienvenue`.
-- Menu de langue : donne `FRENCH`, `ENGLISH`… et retire l'ancienne langue.
-- Bouton de vérification : donne `member` et retire `Unverified`.
-- Boost : donne/retire `Server Booster` quand un boost commence ou s'arrête.
-
-**Rien n'est jamais écrasé.** Le bot ne modifie pas les salons ou rôles existants : il
-ajoute ce qui manque. Seul `/setup reset` supprime, et seulement les salons de la config.
+À l'arrivée d'un membre : rôle **member** + message de bienvenue dans `💬・général`.
+Quand quelqu'un boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 ## Personnaliser
 
-Tout est dans **`src/config.js`** :
+Tout est dans **`src/config.js`**, dans l'ordre :
 
-- `roles` — la liste des rôles, dans l'ordre de la hiérarchie (le premier est le plus haut).
-- `categories` — les catégories et leurs salons (`text`, `voice`, `forum`, `annonce`).
-- `accessPresets` — qui voit et écrit : `public`, `readonly`, `staff`, `support`, `creators`.
-- `languages` — les langues et leurs drapeaux (clé, libellé, code ISO, emoji).
-- `translation` — drapeaux, salons exclus, langue par défaut.
-- `tutorials` — les salons tutoriels et leur contenu.
-- `autoRolesOnJoin`, `boosterRole`, `panel`, `welcome`.
+- `roles` — les rôles, du plus haut au plus bas.
+- `roleGroups` — le groupe `staff` (qui voit les salons privés).
+- `accessPresets` — `public` (tout le monde écrit), `readonly` (seul le staff écrit),
+  `staff` (invisible pour les membres).
+- `categories` — les catégories et leurs salons (`text` ou `voice`).
+- `autoRolesOnJoin`, `boosterRole`, `welcome`.
+- `languages` — les langues du menu de `/traduire`.
+- `clips` — couleur, footer, réactions, salon autorisé pour `/clip`.
 
-Après une modification : relance le bot et refais `/setup salons` ou `/setup roles`.
-Ce qui existe déjà est ignoré, ce qui manque est créé.
+Après une modification : relance le bot, puis `/setup` (ou `/setup reset:true` pour
+repartir de zéro).
+
+## Mettre le bot en ligne
+
+### 1. Créer l'application Discord
+
+1. https://discord.com/developers/applications → **New Application**.
+2. Onglet **General Information** : copie l'**Application ID** → c'est `CLIENT_ID`.
+3. Onglet **Bot** : **Reset Token** → copie le token → c'est `DISCORD_TOKEN`.
+4. Toujours dans **Bot**, active **SERVER MEMBERS INTENT** (pour les rôles à l'arrivée),
+   puis **Save Changes**.
+
+### 2. Inviter le bot
+
+Onglet **OAuth2 > URL Generator** : coche `bot` + `applications.commands`, coche
+**Administrator**, ouvre l'URL, choisis ton serveur, **Autoriser**.
+
+Puis sur Discord : **Paramètres du serveur > Rôles** et glisse le rôle du bot
+**tout en haut** de la liste.
+
+### 3. Faire tourner le bot (gratuit)
+
+**Option A — GitHub Actions** (aucun compte à créer, le dépôt doit être public) :
+
+1. Dépôt > **Settings** > **Secrets and variables** > **Actions** >
+   **New repository secret**, trois fois :
+   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID` (l'ID de ton serveur).
+2. Onglet **Actions** > **Bot Discord** > **Run workflow**.
+
+Le bot tourne 6 h par exécution, puis la suivante reprend automatiquement. Un push sur
+`main` le redémarre proprement.
+
+**Option B — Render** (gratuit, sans coupure avec un ping) :
+
+1. https://render.com → **New** > **Web Service** > choisis ce dépôt (le fichier
+   `render.yaml` fait le reste).
+2. Dans **Environment**, ajoute `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`.
+3. Pour éviter la mise en veille : https://uptimerobot.com, monitor **HTTP(s)** sur
+   l'adresse du service, toutes les 5 minutes.
+
+**Page de diagnostic** : ouvre l'adresse du service Render, elle affiche
+`ÉTAT : CONNECTÉ — …` ou l'erreur exacte (token, intents, variables). Le bot ne s'arrête
+plus en cas d'erreur : il réessaie chaque minute.
+
+### 4. Configurer le serveur
+
+Sur Discord : `/setup`, puis c'est prêt. `/clip` et `/traduire` sont utilisables tout
+de suite.
 
 ## Commandes du projet (terminal)
 
 ```bash
 npm install      # installe les dépendances
-npm start        # démarre le bot (enregistre aussi les commandes au démarrage)
+npm start        # démarre le bot (enregistre les commandes au démarrage)
 npm run deploy   # enregistre les commandes sans démarrer le bot
-npm run invite   # affiche le lien d'invitation du bot
+npm run invite   # affiche le lien d'invitation
 ```
-
-Les commandes sont maintenant enregistrées automatiquement au démarrage : `npm run
-deploy` n'est utile que pour les rafraîchir sans lancer le bot.
 
 ## Dépannage
 
-### La page de diagnostic (à ouvrir en premier)
-
-Ouvre l'adresse de ton service Render (`https://discord-setup-bot-xxxx.onrender.com`) :
-elle affiche l'état réel du bot, sans passer par les logs.
-
-- `ÉTAT : CONNECTÉ — MonBot#1234` → tout va bien, tape `/setup tout` dans Discord.
-- `ÉTAT : NON CONNECTÉ` → la page donne l'erreur exacte et le conseil correspondant
-  (token invalide, intents désactivés, variable manquante…).
-- Elle liste aussi les variables vues par le service, pour repérer un `GUILD_ID` vide
-  ou un token non défini.
-
-Le bot ne s'arrête plus en cas d'erreur : il réessaie toutes les minutes, donc la page
-reste consultable et il repart tout seul dès que tu corriges la variable.
-
-- **Les commandes n'apparaissent pas** : vérifie `CLIENT_ID` et `GUILD_ID` dans les
-  variables, puis redémarre le service. Sur un serveur, l'affichage est immédiat.
-- **« Missing Permissions »** : le rôle du bot est trop bas dans la hiérarchie, ou il
-  manque *Gérer les salons* / *Gérer les rôles*.
-- **Les rôles automatiques ne marchent pas** : active **SERVER MEMBERS INTENT** dans le
-  portail développeur, puis redémarre le bot.
-- **Les drapeaux n'apparaissent pas** : active **MESSAGE CONTENT INTENT**, et vérifie que
-  le salon n'est pas dans `translation.exclude`. Il faut aussi la permission *Ajouter des
-  réactions* dans le salon.
-- **« Used disallowed intents »** au démarrage : les intents ne sont pas activés dans le
-  portail développeur.
-- **Le bot se déconnecte sans raison** : sur un hébergeur gratuit, le service peut être
-  mis en veille. Prends l'offre payante la moins chère ou un autre hébergeur.
+- **Les commandes n'apparaissent pas** : le bot n'est pas connecté (regarde les logs),
+  ou `CLIENT_ID` / `GUILD_ID` manquent.
+- **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
+  salons* / *Gérer les rôles*.
+- **Les rôles à l'arrivée ne marchent pas** : active **SERVER MEMBERS INTENT**.
+- **`/clip` refuse les liens** : le lien et l'image doivent commencer par `http://` ou
+  `https://`.

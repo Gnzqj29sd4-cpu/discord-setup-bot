@@ -26,10 +26,7 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor(welcome.color ?? 0x2ecc71)
       .setTitle(`Bienvenue ${member.user.username} !`)
-      .setDescription(
-        `Salut ${member}, tu es le membre **#${member.guild.memberCount}**.\n` +
-          'Choisis ta langue dans 🌍・choisir-sa-langue, puis valide les règles dans ✅・vérification.',
-      )
+      .setDescription(`Salut ${member}, tu es le membre **#${member.guild.memberCount}**.`)
       .setThumbnail(member.user.displayAvatarURL({ size: 256 }));
 
     try {
