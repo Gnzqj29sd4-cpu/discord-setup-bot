@@ -64,24 +64,23 @@ Boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 ## La traduction
 
-Deux façons, les deux disponibles :
+**Par drapeau, choisi par toi.** Le bot ne met plus aucun drapeau sous les messages.
+C'est toi qui choisis la langue : tu appuies sur le bouton emoji à côté du message,
+tu choisis 🇫🇷 🇬🇧 🇸🇦… et le bot répond avec la traduction, sous le message.
 
-**1. Par drapeau** — le bot ajoute automatiquement 🇫🇷 🇬🇧 🇸🇦 sous chaque message.
-Tu cliques sur le drapeau de la langue voulue, le bot répond avec la traduction en
-réponse au message (auteur, langue détectée, langue cible). Une seule réponse par
-message et par langue, même si plusieurs personnes cliquent.
+Toutes les langues sont reconnues : 🇫🇷 fr, 🇬🇧 en, 🇪🇸 es, 🇵🇹 pt, 🇩🇪 de, 🇷🇺 ru, 🇹🇷 tr,
+🇮🇹 it, 🇸🇦 ar. Si plusieurs personnes cliquent le même drapeau en même temps, une seule
+traduction est envoyée.
 
-**2. Par commande** — `/traduire texte:salut langue:English`, avec le menu déroulant
-des 9 langues.
+**Par commande** — `/traduire texte:salut langue:English`, avec le menu déroulant.
 
 Google est utilisé en premier, MyMemory prend le relais si Google ne répond pas : deux
 services gratuits, sans clé ni compte.
 
-Réglages dans `config.js`, section `flags` : `enabled` (désactiver les drapeaux),
-`languages` (quels drapeaux, par code : `fr`, `en`, `ar`…), `exclude` (salons sans
-drapeaux), `color` (orange `0xff7900`), `maxLength`.
+Réglages dans `config.js`, section `flags` : `enabled`, `languages` (quelles langues sont
+reconnues, par code), `color` (orange `0xff7900`), `maxLength`.
 
-Les drapeaux demandent l'intent **MESSAGE CONTENT** et la permission *Add Reactions*.
+La traduction demande l'intent **MESSAGE CONTENT** (portail Discord > Bot).
 
 ## Personnaliser
 
@@ -147,9 +146,9 @@ npm run invite   # affiche le lien d'invitation
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les rôles à l'arrivée ne marchent pas** : active **SERVER MEMBERS INTENT**.
-- **Les drapeaux n'apparaissent pas** : active **MESSAGE CONTENT INTENT** et vérifie que
-  le bot a la permission *Add Reactions* dans le salon, et que le salon n'est pas dans
-  `flags.exclude`.
+- **La traduction par drapeau ne marche pas** : active **MESSAGE CONTENT INTENT** dans le
+  portail Discord (onglet Bot), puis redémarre le bot. Vérifie aussi que l'emoji choisi
+  est bien un drapeau de la liste `flags.languages`.
 - **Les règles ne sont pas publiées** : le salon `📜・rules` n'existe pas encore — lance
   `/salon` une première fois, il crée puis publie.
 - **`/clip` refuse le lien** : il doit ressembler à un vrai lien

@@ -15,10 +15,4 @@ function languageForEmoji(emoji) {
   return flagLanguages().find((language) => language.emoji === emoji) ?? null;
 }
 
-/** Le salon reçoit-il des drapeaux ? */
-function acceptsFlags(channelName) {
-  if (!flags.enabled) return false;
-  return !flags.exclude.includes(channelName ?? '');
-}
-
-module.exports = { flagLanguages, languageForEmoji, acceptsFlags };
+module.exports = { flagLanguages, languageForEmoji };

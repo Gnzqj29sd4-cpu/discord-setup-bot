@@ -5,16 +5,24 @@ const { flags } = require('../config');
 const { languageForEmoji } = require('../lib/flags');
 const { translate } = require('../lib/translate');
 
-// Une seule réponse par message et par langue, même si plusieurs personnes
-// cliquent le même drapeau.
-const answered = new Set();
-const ANSWERED_MAX = 1000;
+// Anti-doublon : si plusieurs personnes cliquent le même drapeau au même moment,
+// une seule traduction est envoyée. Le verrou expire au bout d'une minute, donc
+// on peut retenter (retirer la réaction puis recliquer) sans être bloqué.
+const recent = new Map();
+const RECENT_MS = 60 * 1000;
 
-function remember(key) {
-  if (answered.size >= ANSWERED_MAX) {
-    answered.delete(answered.values().next().value);
+function isDuplicate(key) {
+  const at = recent.get(key);
+  const now = Date.now();
+  if (at && now - at < RECENT_MS) return true;
+  recent.set(key, now);
+
+  if (recent.size > 500) {
+    for (const [storedKey, storedAt] of recent) {
+      if (now - storedAt > RECENT_MS) recent.delete(storedKey);
+    }
   }
-  answered.add(key);
+  return false;
 }
 
 /** Un clic sur un drapeau traduit le message dans la langue du drapeau. */
@@ -48,8 +56,7 @@ module.exports = {
     if (message.author.bot) return;
 
     const key = `${message.id}:${language.code}`;
-    if (answered.has(key)) return;
-    remember(key);
+    if (isDuplicate(key)) return;
 
     try {
       const result = await translate(message.content, language.code, flags.maxLength);

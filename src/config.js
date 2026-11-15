@@ -222,7 +222,11 @@ const information = {
   fields: [
     { name: '💬 Language', value: 'All channels and messages are in English.' },
     { name: '🎬 Clips', value: 'Publish a clip with `/clip`.' },
-    { name: '🌍 Translation', value: 'Translate any text with `/traduire`.' },
+    {
+      name: '🌍 Translation',
+      value:
+        'Pick a flag with the emoji picker on any message to translate it, or use `/traduire`.',
+    },
     { name: '🛡️ Support', value: 'Contact a staff member in 💼・staff if you need help.' },
   ],
   footer: 'CORTISOLSCRIPT • INFORMATION',
@@ -263,16 +267,15 @@ const translation = {
 
 // -----------------------------------------------------------------------------
 //  9b. FLAGS — translation by flag reaction
-//  The bot reacts to every message with the flags below. Clicking a flag
-//  translates that message into the flag's language, in a reply.
+//  The bot does NOT add flags under messages. You choose the language yourself:
+//  open the emoji picker on a message, pick a flag, and the bot translates that
+//  message into the flag's language, in a reply.
 // -----------------------------------------------------------------------------
 const flags = {
   enabled: true,
   color: 0xff7900,
-  // Languages (codes from the list above) offered as flags under each message.
-  languages: ['fr', 'en', 'ar'],
-  // Channels where the bot never adds flags (exact names).
-  exclude: ['📜・rules', '📢・announcements', '📋・information', '🚨・logs'],
+  // Languages offered as flags (codes from the list above).
+  languages: ['fr', 'en', 'es', 'pt', 'de', 'ru', 'tr', 'it', 'ar'],
   // Longest message translated (MyMemory caps around 500 characters).
   maxLength: 450,
   footer: 'Flag-Reaction Feature',
