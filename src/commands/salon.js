@@ -8,13 +8,12 @@ const {
 } = require('discord.js');
 const { createRoles, applyHierarchy } = require('../lib/roles');
 const { createChannels, deleteConfiguredChannels } = require('../lib/channels');
-const { publishRules, publishInformation } = require('../lib/publish');
 const { theme } = require('../config');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('salon')
-    .setDescription('Create the server roles, channels, rules and information')
+    .setDescription('Create the server roles and clip channels')
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .setDMPermission(false)
     .addBooleanOption((option) =>
@@ -51,20 +50,6 @@ module.exports = {
       const channelsResult = await createChannels(guild, (line) => lines.push(line));
       lines.push(
         `Channels: ${channelsResult.created.length} created, ${channelsResult.skipped.length} already there.`,
-      );
-
-      // Rafraîchit le cache avant de publier, sinon les salons tout neufs
-      // ne sont pas encore connus.
-      await guild.channels.fetch();
-
-      const rulesState = await publishRules(guild, (line) => lines.push(line));
-      const infoState = await publishInformation(guild, (line) => lines.push(line));
-
-      lines.push(
-        `Rules: ${rulesState === 'created' ? 'published' : rulesState === 'skipped' ? 'already published' : 'channel missing'}.`,
-      );
-      lines.push(
-        `Information: ${infoState === 'created' ? 'published' : infoState === 'skipped' ? 'already published' : 'channel missing'}.`,
       );
     } catch (error) {
       lines.push(`❌ ${error.message}`);

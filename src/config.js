@@ -1,8 +1,8 @@
 'use strict';
 
 // =============================================================================
-//  SERVER CONFIGURATION
-//  Everything the bot creates is described here. Edit, restart, then /salon.
+//  SERVER CONFIGURATION — CLIPS ONLY
+//  The server contains clip channels and nothing else. Edit, restart, /salon.
 //  Existing channels, roles and messages are never overwritten or duplicated.
 // =============================================================================
 
@@ -100,7 +100,7 @@ const accessPresets = {
     everyone: { allow: ['ViewChannel', 'ReadMessageHistory'], deny: [] },
     groups: {},
   },
-  // Everyone can read, only staff can write (rules, announcements, information)
+  // Everyone can read, only staff can write
   readonly: {
     everyone: {
       allow: ['ViewChannel', 'ReadMessageHistory'],
@@ -120,38 +120,10 @@ const accessPresets = {
 };
 
 // -----------------------------------------------------------------------------
-//  5. CHANNELS — all names in English
+//  5. CHANNELS — clip channels only
 // -----------------------------------------------------------------------------
 const categories = [
   {
-    name: '📌・INFORMATION',
-    access: 'public',
-    channels: [
-      { name: '📜・rules', type: 'text', access: 'readonly', topic: 'Server rules' },
-      {
-        name: '📢・announcements',
-        type: 'text',
-        access: 'readonly',
-        topic: 'Official announcements',
-      },
-      {
-        name: '📋・information',
-        type: 'text',
-        access: 'readonly',
-        topic: 'Everything you need to know about this server',
-      },
-    ],
-  },
-  {
-    name: '💬・COMMUNITY',
-    access: 'public',
-    channels: [
-      { name: '💬・general', type: 'text', topic: 'Talk about anything, in English' },
-      { name: '🎓・tutorials', type: 'text', topic: 'Video tutorials' },
-    ],
-  },
-  {
-    // One channel per platform: post the clip in the matching channel.
     name: '🎬・CLIPS',
     access: 'public',
     channels: [
@@ -178,85 +150,24 @@ const categories = [
       },
     ],
   },
-  {
-    name: '🛡️・STAFF',
-    access: 'staff',
-    channels: [
-      { name: '💼・staff', type: 'text' },
-      { name: '🚨・logs', type: 'text' },
-    ],
-  },
-  {
-    name: '🔊・VOICE',
-    access: 'public',
-    channels: [{ name: '🔊・General', type: 'voice' }],
-  },
 ];
 
 // -----------------------------------------------------------------------------
-//  6. RULES — published automatically by /salon in 📜・rules
-// -----------------------------------------------------------------------------
-const rules = {
-  channel: '📜・rules',
-  title: '📜 Server Rules',
-  intro: 'By staying on this server, you agree to the rules below.',
-  items: [
-    'Respect all members and staff.',
-    'No insults, harassment or discrimination.',
-    'No spam or unnecessary mentions.',
-    'No advertising without permission.',
-    'No raids, scams or malicious links.',
-    'Follow staff instructions.',
-    'No abuse of bots or server features.',
-    'Respect all Discord Terms of Service and Community Guidelines.',
-  ],
-  staffPolicy: {
-    title: '⚠️ Staff Policy',
-    items: [
-      'Moderators must remain professional.',
-      'No abuse of moderation permissions.',
-      'All important moderation actions must be logged.',
-      'Staff decisions must be respected.',
-    ],
-  },
-  footer: 'CORTISOLSCRIPT • SERVER RULES',
-};
-
-// -----------------------------------------------------------------------------
-//  7. INFORMATION — published automatically by /salon in 📋・information
-// -----------------------------------------------------------------------------
-const information = {
-  channel: '📋・information',
-  title: '📋 Information',
-  description: 'Everything you need to know about this server.',
-  fields: [
-    { name: '💬 Language', value: 'All channels and messages are in English.' },
-    { name: '🎬 Clips', value: 'Publish a clip with `/clip`.' },
-    {
-      name: '🌍 Translation',
-      value:
-        'Pick a flag with the emoji picker on any message to translate it, or use `/traduire`.',
-    },
-    { name: '🛡️ Support', value: 'Contact a staff member in 💼・staff if you need help.' },
-  ],
-  footer: 'CORTISOLSCRIPT • INFORMATION',
-};
-
-// -----------------------------------------------------------------------------
-//  8. NEW MEMBERS
+//  6. NEW MEMBERS
 // -----------------------------------------------------------------------------
 const autoRolesOnJoin = ['member'];
 const boosterRole = 'booster';
 
+// Welcome message: put a channel name here to enable it, '' to disable it.
 const welcome = {
-  channel: '💬・general',
+  channel: '',
   title: 'Welcome',
-  message: 'Read 📜・rules and enjoy your stay. Everything here is in English.',
+  message: 'Post your clips with /clip. Everything here is in English.',
   color: theme.primary,
 };
 
 // -----------------------------------------------------------------------------
-//  9. TRANSLATION (/traduire)
+//  7. TRANSLATION (/traduire)
 // -----------------------------------------------------------------------------
 const languages = [
   { label: 'Français', code: 'fr', emoji: '🇫🇷' },
@@ -276,7 +187,7 @@ const translation = {
 };
 
 // -----------------------------------------------------------------------------
-//  9b. FLAGS — translation by flag reaction
+//  8. FLAGS — translation by flag reaction
 //  The bot does NOT add flags under messages. You choose the language yourself:
 //  open the emoji picker on a message, pick a flag, and the bot translates that
 //  message into the flag's language, in a reply.
@@ -284,9 +195,7 @@ const translation = {
 const flags = {
   enabled: true,
   color: 0xff7900,
-  // Languages offered as flags (codes from the list above).
   languages: ['fr', 'en', 'es', 'pt', 'de', 'ru', 'tr', 'it', 'ar'],
-  // Longest message translated (MyMemory caps around 500 characters).
   maxLength: 450,
   // The bot's translation message deletes itself after this many seconds
   // (0 = keep it).
@@ -295,7 +204,7 @@ const flags = {
 };
 
 // -----------------------------------------------------------------------------
-//  10. CLIPS (/clip)
+//  9. CLIPS (/clip)
 // -----------------------------------------------------------------------------
 const clips = {
   color: theme.primary,
@@ -324,8 +233,6 @@ module.exports = {
   roleGroups,
   accessPresets,
   categories,
-  rules,
-  information,
   autoRolesOnJoin,
   boosterRole,
   welcome,
