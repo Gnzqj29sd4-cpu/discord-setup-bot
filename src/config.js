@@ -1,13 +1,22 @@
 'use strict';
 
 // =============================================================================
-//  CONFIGURATION — simple et lisible
-//  Rôles, salons, couleurs. Modifie ce fichier, relance le bot, puis /setup.
-//  Ce qui existe déjà est ignoré : rien n'est écrasé, rien n'est supprimé.
+//  SERVER CONFIGURATION
+//  Everything the bot creates is described here. Edit, restart, then /salon.
+//  Existing channels, roles and messages are never overwritten or duplicated.
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-//  1. RÔLES (dans l'ordre de la hiérarchie : le premier est le plus haut)
+//  1. THEME — orange and black
+// -----------------------------------------------------------------------------
+const theme = {
+  primary: 0xff5900, // orange
+  dark: 0x141414, // near black
+  success: 0x2ecc71,
+};
+
+// -----------------------------------------------------------------------------
+//  2. ROLES (order = hierarchy, first is the highest)
 // -----------------------------------------------------------------------------
 const roles = [
   { key: 'owner', name: 'OWNER', color: 0xe74c3c, hoist: true, permissions: ['Administrator'] },
@@ -15,7 +24,7 @@ const roles = [
   {
     key: 'moderator',
     name: 'MODERATOR',
-    color: 0xf1c40f,
+    color: 0xff5900,
     hoist: true,
     permissions: ['ViewAuditLog', 'KickMembers', 'ModerateMembers', 'ManageMessages'],
   },
@@ -59,12 +68,12 @@ const roles = [
   { key: 'test_creator', name: 'TEST CREATOR', color: 0x5d6d7e, hoist: true, mentionable: true },
   { key: 'cc', name: 'CC', color: 0x7d3cff },
   { key: 'og_customer', name: 'OG CUSTOMER', color: 0xf1c40f, hoist: true, mentionable: true },
-  { key: 'booster', name: 'Server Booster', color: 0xe67e22, hoist: true },
+  { key: 'booster', name: 'Server Booster', color: 0xff5900, hoist: true },
   { key: 'member', name: 'member', color: 0x99aab5 },
 ];
 
 // -----------------------------------------------------------------------------
-//  2. GROUPES DE RÔLES (qui voit quoi)
+//  3. ROLE GROUPS (who can see private channels)
 // -----------------------------------------------------------------------------
 const roleGroups = {
   staff: [
@@ -83,15 +92,15 @@ const roleGroups = {
 };
 
 // -----------------------------------------------------------------------------
-//  3. NIVEAUX D'ACCÈS DES SALONS
+//  4. CHANNEL ACCESS LEVELS
 // -----------------------------------------------------------------------------
 const accessPresets = {
-  // Tout le monde voit et écrit
+  // Everyone can read and write
   public: {
     everyone: { allow: ['ViewChannel', 'ReadMessageHistory'], deny: [] },
     groups: {},
   },
-  // Tout le monde voit, seul le staff écrit (règles, annonces)
+  // Everyone can read, only staff can write (rules, announcements, information)
   readonly: {
     everyone: {
       allow: ['ViewChannel', 'ReadMessageHistory'],
@@ -101,7 +110,7 @@ const accessPresets = {
       staff: { allow: ['ViewChannel', 'SendMessages', 'AddReactions'], deny: [] },
     },
   },
-  // Staff seulement
+  // Staff only
   staff: {
     everyone: { allow: [], deny: ['ViewChannel'] },
     groups: {
@@ -111,25 +120,35 @@ const accessPresets = {
 };
 
 // -----------------------------------------------------------------------------
-//  4. SALONS
-//  type : 'text' ou 'voice'. access : 'public', 'readonly' ou 'staff'.
+//  5. CHANNELS — all names in English
 // -----------------------------------------------------------------------------
 const categories = [
   {
-    name: '📢・INFORMATION',
+    name: '📌・INFORMATION',
     access: 'public',
     channels: [
-      { name: '📜・règles', type: 'text', access: 'readonly', topic: 'Les règles du serveur' },
-      { name: '📢・annonces', type: 'text', access: 'readonly', topic: 'Les annonces officielles' },
+      { name: '📜・rules', type: 'text', access: 'readonly', topic: 'Server rules' },
+      {
+        name: '📢・announcements',
+        type: 'text',
+        access: 'readonly',
+        topic: 'Official announcements',
+      },
+      {
+        name: '📋・information',
+        type: 'text',
+        access: 'readonly',
+        topic: 'Everything you need to know about this server',
+      },
     ],
   },
   {
-    name: '💬・COMMUNAUTÉ',
+    name: '💬・COMMUNITY',
     access: 'public',
     channels: [
-      { name: '💬・général', type: 'text' },
-      { name: '🎬・clips', type: 'text', topic: 'Les clips des créateurs' },
-      { name: '🎓・tutoriels', type: 'text', topic: 'Les tutoriels en vidéo' },
+      { name: '💬・general', type: 'text', topic: 'Talk about anything, in English' },
+      { name: '🎬・clips', type: 'text', topic: 'Creator clips — use /clip to publish' },
+      { name: '🎓・tutorials', type: 'text', topic: 'Video tutorials' },
     ],
   },
   {
@@ -141,23 +160,72 @@ const categories = [
     ],
   },
   {
-    name: '🔊・VOCAL',
+    name: '🔊・VOICE',
     access: 'public',
-    channels: [{ name: '🔊・Général', type: 'voice' }],
+    channels: [{ name: '🔊・General', type: 'voice' }],
   },
 ];
 
 // -----------------------------------------------------------------------------
-//  5. ARRIVÉE D'UN MEMBRE
-//  Rôle donné automatiquement, et salon du message de bienvenue.
+//  6. RULES — published automatically by /salon in 📜・rules
+// -----------------------------------------------------------------------------
+const rules = {
+  channel: '📜・rules',
+  title: '📜 Server Rules',
+  intro: 'By staying on this server, you agree to the rules below.',
+  items: [
+    'Respect all members and staff.',
+    'No insults, harassment or discrimination.',
+    'No spam or unnecessary mentions.',
+    'No advertising without permission.',
+    'No raids, scams or malicious links.',
+    'Follow staff instructions.',
+    'No abuse of bots or server features.',
+    'Respect all Discord Terms of Service and Community Guidelines.',
+  ],
+  staffPolicy: {
+    title: '⚠️ Staff Policy',
+    items: [
+      'Moderators must remain professional.',
+      'No abuse of moderation permissions.',
+      'All important moderation actions must be logged.',
+      'Staff decisions must be respected.',
+    ],
+  },
+  footer: 'CORTISOLSCRIPT • SERVER RULES',
+};
+
+// -----------------------------------------------------------------------------
+//  7. INFORMATION — published automatically by /salon in 📋・information
+// -----------------------------------------------------------------------------
+const information = {
+  channel: '📋・information',
+  title: '📋 Information',
+  description: 'Everything you need to know about this server.',
+  fields: [
+    { name: '💬 Language', value: 'All channels and messages are in English.' },
+    { name: '🎬 Clips', value: 'Publish a clip with `/clip`.' },
+    { name: '🌍 Translation', value: 'Translate any text with `/traduire`.' },
+    { name: '🛡️ Support', value: 'Contact a staff member in 💼・staff if you need help.' },
+  ],
+  footer: 'CORTISOLSCRIPT • INFORMATION',
+};
+
+// -----------------------------------------------------------------------------
+//  8. NEW MEMBERS
 // -----------------------------------------------------------------------------
 const autoRolesOnJoin = ['member'];
 const boosterRole = 'booster';
-const welcome = { channel: '💬・général', color: 0x2ecc71 };
+
+const welcome = {
+  channel: '💬・general',
+  title: 'Welcome',
+  message: 'Read 📜・rules and enjoy your stay. Everything here is in English.',
+  color: theme.primary,
+};
 
 // -----------------------------------------------------------------------------
-//  6. TRADUCTION (/traduire)
-//  C'est toi qui choisis la langue : /traduire texte:salut langue:English
+//  9. TRANSLATION (/traduire)
 // -----------------------------------------------------------------------------
 const languages = [
   { label: 'Français', code: 'fr', emoji: '🇫🇷' },
@@ -172,28 +240,28 @@ const languages = [
 ];
 
 const translation = {
-  // Langue proposée par défaut dans le menu de /traduire
   defaultLanguage: 'fr',
-  // Longueur maximale d'un texte à traduire
   maxLength: 1800,
 };
 
 // -----------------------------------------------------------------------------
-//  7. CLIPS (/clip)
+//  10. CLIPS (/clip)
 // -----------------------------------------------------------------------------
 const clips = {
-  color: 0xff5900,
+  color: theme.primary,
   footer: 'CORTISOLSCRIPT • CONTENT CREATOR TEAM',
   reactions: ['❤️', '🔥'],
-  // Salon où /clip est autorisé (nom exact). Vide = tous les salons.
   channel: '',
 };
 
 module.exports = {
+  theme,
   roles,
   roleGroups,
   accessPresets,
   categories,
+  rules,
+  information,
   autoRolesOnJoin,
   boosterRole,
   welcome,

@@ -1,108 +1,108 @@
-# Bot Discord — simple
+# Bot Discord — orange & black
 
-Un bot Discord simple : quelques commandes, un serveur qui se crée tout seul.
-Rôles, salons et couleurs se règlent dans **`src/config.js`**.
+Un bot Discord simple : trois commandes, un serveur qui se crée tout seul en anglais,
+avec une charte orange et noir. Tout se règle dans **`src/config.js`**.
 
 ## Les commandes
 
 | Commande | Effet |
 | --- | --- |
-| `/setup` | Crée les rôles et les salons manquants (ne supprime rien) |
-| `/setup reset:true` | Supprime d'abord les salons de `config.js`, puis les recrée |
+| `/salon` | Crée les rôles et les salons manquants, puis publie les règles et l'information |
+| `/salon reset:true` | Supprime d'abord les salons de `config.js`, puis tout recrée |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans **la langue que tu choisis** |
-| `/clip titre:… description:… lien:… image:…` | Publie un clip : miniature, bouton « Regarder le clip », réactions ❤️ 🔥 |
+| `/clip titre:… description:… lien:… image:…` | Publie un clip : miniature, bouton « REGARDER LE CLIP », réactions ❤️ 🔥 |
 
-C'est tout. Trois commandes, pas de menu, pas de salon spécial.
+## Les salons créés par `/salon`
+
+```
+📌・INFORMATION     📜・rules    📢・announcements    📋・information   (lecture seule)
+💬・COMMUNITY       💬・general   🎬・clips    🎓・tutorials
+🛡️・STAFF          💼・staff     🚨・logs     (invisible pour les membres)
+🔊・VOICE          🔊・General (vocal)
+```
+
+Tous les noms sont en anglais, comme demandé.
+
+**Publication automatique** : `/salon` poste lui-même, sans doublon :
+
+- dans `📜・rules` — l'embed orange **📜 Server Rules** (les 8 règles) et l'embed noir
+  **⚠️ Staff Policy** (les 4 points) ;
+- dans `📋・information` — l'embed orange **📋 Information** (langue, clips, traduction,
+  support).
+
+Si tu relances `/salon`, le bot vérifie le footer de chaque embed avant de poster : rien
+n'est dupliqué, rien n'est écrasé.
+
+## Le design orange et noir
+
+La section `theme` de `config.js` :
+
+- `primary` = `0xff5900` (orange) — titres, règles, information, `/clip`, rôle MODERATOR
+  et Server Booster.
+- `dark` = `0x141414` (noir) — embed de la politique du staff.
+
+## Les rôles
+
+OWNER, ADMIN, MODERATOR, Manager, CONTENT MANAGER, SUPPORT-LVL1/2/3, TEST-SUPPORTER,
+SUPPORTER, Security, STREAMER, CREATOR LVL1/2/3, TEST CREATOR, CC, OG CUSTOMER,
+Server Booster, member.
+
+À l'arrivée : rôle **member** + message de bienvenue dans `💬・general` (en anglais).
+Boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
 
 ## La traduction
 
-Tu écris `/traduire`, tu tapes ton texte, tu choisis la langue dans le menu déroulant
-(🇫🇷 Français, 🇬🇧 English, 🇪🇸 Español, 🇵🇹 Português, 🇩🇪 Deutsch, 🇷🇺 Русский, 🇹🇷 Türkçe,
-🇮🇹 Italiano, 🇸🇦 العربية). Le bot répond avec la traduction dans un embed.
-
-Exemple : `/traduire texte:salut langue:English` → **hi**.
-
-Aucune réaction, aucun drapeau sous les messages : c'est toi qui décides, à chaque
-commande. La traduction utilise le service public de Google, sans clé et sans compte.
-
-## Les salons créés par `/setup`
-
-```
-📢・INFORMATION     📜・règles (lecture seule)   📢・annonces (lecture seule)
-💬・COMMUNAUTÉ      💬・général   🎬・clips   🎓・tutoriels
-🛡️・STAFF          💼・staff     🚨・logs      (invisible pour les membres)
-🔊・VOCAL          🔊・Général (vocal)
-```
-
-Les rôles : OWNER, ADMIN, MODERATOR, Manager, CONTENT MANAGER, SUPPORT-LVL1/2/3,
-TEST-SUPPORTER, SUPPORTER, Security, STREAMER, CREATOR LVL1/2/3, TEST CREATOR, CC,
-OG CUSTOMER, Server Booster, member.
-
-À l'arrivée d'un membre : rôle **member** + message de bienvenue dans `💬・général`.
-Quand quelqu'un boost : rôle **Server Booster** ajouté, retiré quand le boost s'arrête.
+`/traduire` : tu tapes ton texte, tu choisis la langue dans le menu déroulant
+(🇫🇷 🇬🇧 🇪🇸 🇵🇹 🇩🇪 🇷🇺 🇹🇷 🇮🇹 🇸🇦), le bot répond avec la traduction.
+Aucune réaction, aucun drapeau : c'est toi qui décides, à chaque commande.
 
 ## Personnaliser
 
-Tout est dans **`src/config.js`**, dans l'ordre :
+Tout est dans **`src/config.js`** :
 
-- `roles` — les rôles, du plus haut au plus bas.
-- `roleGroups` — le groupe `staff` (qui voit les salons privés).
-- `accessPresets` — `public` (tout le monde écrit), `readonly` (seul le staff écrit),
-  `staff` (invisible pour les membres).
-- `categories` — les catégories et leurs salons (`text` ou `voice`).
+- `theme` — les deux couleurs.
+- `roles`, `roleGroups`, `accessPresets` — rôles et permissions.
+- `categories` — les catégories et leurs salons.
+- `rules` — le texte des règles et de la politique du staff.
+- `information` — le contenu du salon d'information.
 - `autoRolesOnJoin`, `boosterRole`, `welcome`.
-- `languages` — les langues du menu de `/traduire`.
-- `clips` — couleur, footer, réactions, salon autorisé pour `/clip`.
+- `languages`, `translation`, `clips`.
 
-Après une modification : relance le bot, puis `/setup` (ou `/setup reset:true` pour
-repartir de zéro).
+Après une modification : relance le bot, puis `/salon`.
 
 ## Mettre le bot en ligne
 
 ### 1. Créer l'application Discord
 
 1. https://discord.com/developers/applications → **New Application**.
-2. Onglet **General Information** : copie l'**Application ID** → c'est `CLIENT_ID`.
-3. Onglet **Bot** : **Reset Token** → copie le token → c'est `DISCORD_TOKEN`.
-4. Toujours dans **Bot**, active **SERVER MEMBERS INTENT** (pour les rôles à l'arrivée),
-   puis **Save Changes**.
+2. **General Information** : copie l'**Application ID** → `CLIENT_ID`.
+3. Onglet **Bot** : **Reset Token** → copie le token → `DISCORD_TOKEN`.
+4. Toujours dans **Bot**, active **SERVER MEMBERS INTENT** (rôles à l'arrivée), **Save**.
 
 ### 2. Inviter le bot
 
-Onglet **OAuth2 > URL Generator** : coche `bot` + `applications.commands`, coche
-**Administrator**, ouvre l'URL, choisis ton serveur, **Autoriser**.
-
-Puis sur Discord : **Paramètres du serveur > Rôles** et glisse le rôle du bot
-**tout en haut** de la liste.
+**OAuth2 > URL Generator** : `bot` + `applications.commands`, **Administrator**, ouvre
+l'URL, choisis ton serveur, **Autoriser**. Puis **Paramètres du serveur > Rôles** :
+glisse le rôle du bot **tout en haut**.
 
 ### 3. Faire tourner le bot (gratuit)
 
-**Option A — GitHub Actions** (aucun compte à créer, le dépôt doit être public) :
+**GitHub Actions** (aucun compte à créer, dépôt public) :
 
-1. Dépôt > **Settings** > **Secrets and variables** > **Actions** >
-   **New repository secret**, trois fois :
-   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID` (l'ID de ton serveur).
+1. **Settings** > **Secrets and variables** > **Actions** > **New repository secret** :
+   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`.
 2. Onglet **Actions** > **Bot Discord** > **Run workflow**.
 
-Le bot tourne 6 h par exécution, puis la suivante reprend automatiquement. Un push sur
-`main` le redémarre proprement.
+**Render** (gratuit, sans coupure avec un ping) : **New** > **Web Service** > ce dépôt
+(`render.yaml` fait le reste), ajoute les trois variables, puis un monitor
+https://uptimerobot.com toutes les 5 minutes sur l'adresse du service.
 
-**Option B — Render** (gratuit, sans coupure avec un ping) :
-
-1. https://render.com → **New** > **Web Service** > choisis ce dépôt (le fichier
-   `render.yaml` fait le reste).
-2. Dans **Environment**, ajoute `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`.
-3. Pour éviter la mise en veille : https://uptimerobot.com, monitor **HTTP(s)** sur
-   l'adresse du service, toutes les 5 minutes.
-
-**Page de diagnostic** : ouvre l'adresse du service Render, elle affiche
-`ÉTAT : CONNECTÉ — …` ou l'erreur exacte (token, intents, variables). Le bot ne s'arrête
-plus en cas d'erreur : il réessaie chaque minute.
+La page du service Render affiche `ÉTAT : CONNECTÉ — …` ou l'erreur exacte. Le bot ne
+s'arrête plus en cas d'erreur : il réessaie chaque minute.
 
 ### 4. Configurer le serveur
 
-Sur Discord : `/setup`, puis c'est prêt. `/clip` et `/traduire` sont utilisables tout
-de suite.
+Sur Discord : `/salon`. C'est tout — rôles, salons, règles et information sont en place.
 
 ## Commandes du projet (terminal)
 
@@ -120,5 +120,7 @@ npm run invite   # affiche le lien d'invitation
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les rôles à l'arrivée ne marchent pas** : active **SERVER MEMBERS INTENT**.
+- **Les règles ne sont pas publiées** : le salon `📜・rules` n'existe pas encore — lance
+  `/salon` une première fois, il crée puis publie.
 - **`/clip` refuse les liens** : le lien et l'image doivent commencer par `http://` ou
   `https://`.

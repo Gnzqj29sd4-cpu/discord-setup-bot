@@ -12,7 +12,7 @@ module.exports = {
       try {
         await addRole(member, key);
       } catch (error) {
-        console.warn(`[arrivée] rôle "${key}" non attribué :`, error.message);
+        console.warn(`[join] role "${key}" not assigned:`, error.message);
       }
     }
 
@@ -24,15 +24,15 @@ module.exports = {
     if (!channel) return;
 
     const embed = new EmbedBuilder()
-      .setColor(welcome.color ?? 0x2ecc71)
-      .setTitle(`Bienvenue ${member.user.username} !`)
-      .setDescription(`Salut ${member}, tu es le membre **#${member.guild.memberCount}**.`)
+      .setColor(welcome.color)
+      .setTitle(`${welcome.title} ${member.user.username}`)
+      .setDescription(`You are member **#${member.guild.memberCount}**.\n\n${welcome.message}`)
       .setThumbnail(member.user.displayAvatarURL({ size: 256 }));
 
     try {
       await channel.send({ content: `${member}`, embeds: [embed] });
     } catch (error) {
-      console.warn('[arrivée] message de bienvenue non envoyé :', error.message);
+      console.warn('[join] welcome message not sent:', error.message);
     }
   },
 };
