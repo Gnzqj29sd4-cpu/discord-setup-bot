@@ -93,9 +93,34 @@ function start() {
   const port = process.env.PORT;
   if (!port) return null;
 
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const bannerFile = path.join(__dirname, '..', '..', 'assets', 'banner.png');
+
   const server = http.createServer((request, response) => {
+    const url = request.url ?? '/';
+
+    // La bannière du serveur, utilisée par les embeds de cadrage.
+    if (url.startsWith('/banner.png')) {
+      try {
+        const image = fs.readFileSync(bannerFile);
+        response.writeHead(200, {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=3600',
+        });
+        response.end(image);
+        return;
+      } catch {
+        response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        response.end(
+          'No assets/banner.png in the repository. Use /banniere in Discord to set the image.',
+        );
+        return;
+      }
+    }
+
     // /health répond toujours 200 : Render garde le service éveillé.
-    if (request.url && request.url.startsWith('/health')) {
+    if (url.startsWith('/health')) {
       response.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
       response.end('ok');
       return;

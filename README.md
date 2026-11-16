@@ -12,6 +12,7 @@ la traduction par drapeau, et une charte orange et noir. Tout se règle dans
 | `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
 | `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
+| `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
 
 ## Les salons : uniquement des clips
@@ -41,6 +42,30 @@ ouverts à tous.
   Facebook, Snapchat, Reddit, X. Le bouton devient **WATCH ON TIKTOK**, etc.
 - **Miniature TikTok automatique** sans `image`, via l'API oEmbed publique de TikTok.
 - Réactions ❤️ 🔥 ajoutées automatiquement.
+
+## La bannière et le cadre des photos/vidéos
+
+Quand quelqu'un poste **une photo ou une vidéo** dans un salon de clips, le bot répond
+automatiquement avec :
+
+1. **ta bannière** en pleine largeur, au-dessus ;
+2. **le média encadré** juste en dessous (bordure orange `0xff5900`, nom de l'auteur,
+   pied de page `CORTISOLSCRIPT • CONTENT CREATOR TEAM`).
+
+**Pour mettre ta bannière** : `/banniere image:<ta photo>` — envoie l'image en pièce
+jointe dans l'option. Elle est enregistrée et utilisée pour tous les messages suivants.
+La commande te donne aussi la ligne `BANNER_URL` à coller dans les variables de
+l'hébergeur pour que la bannière survive à un redéploiement (le disque est effacé à
+chaque déploiement).
+
+Autre solution, sans commande : dépose ton image en `assets/banner.png` dans le dépôt.
+Le bot la sert lui-même sur `/banner.png`.
+
+Réglages dans `config.js`, section `branding` : `enabled`, `channels` (salons concernés,
+vide = tous), `frameColor`, `footer`, `bannerUrl`.
+
+Le bot a besoin de la permission **Read Messages** et **Attach Files** pour répondre, et
+de l'intent **MESSAGE CONTENT** (déjà nécessaire pour la traduction).
 
 ## La traduction
 

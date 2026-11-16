@@ -205,8 +205,7 @@ const flags = {
 
 // -----------------------------------------------------------------------------
 //  9. CLIPS (/clip)
-// -----------------------------------------------------------------------------
-const clips = {
+// -----------------------------------------------------------------------------const clips = {
   color: theme.primary,
   footer: 'CORTISOLSCRIPT • CONTENT CREATOR TEAM',
   reactions: ['❤️', '🔥'],
@@ -227,6 +226,23 @@ const clips = {
   defaultPlatform: { name: 'video', emoji: '▶️' },
 };
 
+// -----------------------------------------------------------------------------
+//  10. BRANDING — banner above every photo/video
+//  When someone posts an image or a video in a clip channel, the bot replies
+//  with your banner on top and the media framed below it.
+// -----------------------------------------------------------------------------
+const branding = {
+  enabled: true,
+  // Only these channels (exact names). Empty = every channel.
+  channels: [],
+  // Border/author colour of the frame (orange).
+  frameColor: theme.primary,
+  footer: 'CORTISOLSCRIPT • CONTENT CREATOR TEAM',
+  // Leave empty: the bot serves assets/banner.png itself, or use /banniere.
+  // Otherwise put a direct image URL here (or in the BANNER_URL variable).
+  bannerUrl: '',
+};
+
 module.exports = {
   theme,
   roles,
@@ -240,4 +256,5 @@ module.exports = {
   translation,
   flags,
   clips,
+  branding,
 };
