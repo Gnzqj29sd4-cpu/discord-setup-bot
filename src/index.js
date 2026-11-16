@@ -74,8 +74,9 @@ process.on('unhandledRejection', (error) => {
   console.error('[unhandledRejection]', error);
 });
 
-// Enregistre les commandes à chaque connexion : plus besoin de `npm run deploy`
-// quand le bot tourne sur un hébergeur. Échec non bloquant.
+// Enregistre les commandes à chaque connexion : plus besoin de `npm run deploy`.
+// On cible TOUS les serveurs où le bot est présent : les commandes de serveur
+// apparaissent immédiatement, contrairement aux globales (jusqu'à 1 h).
 async function deployCommands() {
   if (!clientId) {
     console.warn('[commandes] CLIENT_ID absent : commandes non enregistrées.');
@@ -83,14 +84,15 @@ async function deployCommands() {
   }
 
   try {
-    const { count, guildId: registeredOn } = await registerCommands({
+    const { count, guilds } = await registerCommands({
       token,
       clientId,
+      guildIds: [...client.guilds.cache.keys()],
       guildId,
     });
     console.log(
-      registeredOn
-        ? `[commandes] ${count} commande(s) enregistrée(s) sur le serveur ${registeredOn}.`
+      guilds.length > 0
+        ? `[commandes] ${count} commande(s) enregistrée(s) sur ${guilds.length} serveur(s) : ${guilds.join(', ')}`
         : `[commandes] ${count} commande(s) enregistrée(s) globalement.`,
     );
   } catch (error) {
@@ -101,6 +103,12 @@ async function deployCommands() {
 client.once('ready', () => {
   status.setBot(client);
   console.log(`[bot] connecté : ${client.user.tag} (${client.guilds.cache.size} serveur(s))`);
+  deployCommands();
+});
+
+// Un serveur ajouté après le démarrage reçoit les commandes tout de suite.
+client.on('guildCreate', (guild) => {
+  console.log(`[bot] nouveau serveur : ${guild.name} (${guild.id})`);
   deployCommands();
 });
 

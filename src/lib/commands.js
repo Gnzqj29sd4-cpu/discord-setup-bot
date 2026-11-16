@@ -21,26 +21,37 @@ function loadCommandData() {
 }
 
 /**
- * Enregistre les commandes sur Discord.
- * Avec `guildId`, elles apparaissent tout de suite ; sans, jusqu'à 1 h.
- * Quand on enregistre sur un serveur, les commandes globales sont vidées :
- * sinon d'anciennes commandes supprimées du code restent visibles.
+ * Enregistre les commandes.
+ *
+ * Les commandes de serveur (« guild commands ») apparaissent immédiatement,
+ * alors que les globales peuvent mettre jusqu'à une heure. On enregistre donc
+ * sur chaque serveur où le bot est présent — sans dépendre de GUILD_ID — et on
+ * vide la liste globale pour ne pas garder d'anciennes commandes.
+ *
+ * `guildIds` : liste de serveurs ; `guildId` reste accepté pour un seul serveur.
  */
-async function registerCommands({ token, clientId, guildId }) {
+async function registerCommands({ token, clientId, guildIds = [], guildId = null }) {
   const commands = loadCommandData();
   const rest = new REST({ version: '10' }).setToken(token);
 
-  if (guildId) {
-    await rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands });
-    // Nettoie les éventuelles commandes globales d'une ancienne version.
-    await rest.put(Routes.applicationCommands(clientId), { body: [] }).catch((error) => {
-      console.warn('[commandes] nettoyage global impossible :', error.message);
-    });
-  } else {
+  const targets = [...new Set([...(guildId ? [guildId] : []), ...guildIds])].filter(Boolean);
+
+  if (targets.length === 0) {
+    // Aucun serveur connu : on retombe sur les commandes globales.
     await rest.put(Routes.applicationCommands(clientId), { body: commands });
+    return { count: commands.length, guilds: [] };
   }
 
-  return { count: commands.length, guildId: guildId ?? null };
+  for (const target of targets) {
+    await rest.put(Routes.applicationGuildCommands(clientId, target), { body: commands });
+  }
+
+  // Nettoie les éventuelles commandes globales d'une ancienne version.
+  await rest.put(Routes.applicationCommands(clientId), { body: [] }).catch((error) => {
+    console.warn('[commandes] nettoyage global impossible :', error.message);
+  });
+
+  return { count: commands.length, guilds: targets };
 }
 
 module.exports = { loadCommandData, registerCommands };

@@ -14,10 +14,10 @@ if (!token || !clientId) {
 }
 
 registerCommands({ token, clientId, guildId })
-  .then(({ count, guildId: registeredOn }) => {
+  .then(({ count, guilds }) => {
     console.log(
-      registeredOn
-        ? `${count} commande(s) enregistrée(s) sur le serveur ${registeredOn}.`
+      guilds.length > 0
+        ? `${count} commande(s) enregistrée(s) sur le serveur ${guilds.join(', ')}.`
         : `${count} commande(s) enregistrée(s) globalement (peut prendre jusqu'à 1 h ; renseigne GUILD_ID pour un affichage immédiat).`,
     );
   })

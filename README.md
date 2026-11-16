@@ -6,22 +6,27 @@ la traduction par drapeau, et une charte orange et noir. Tout se règle dans
 
 ## Les commandes
 
-**Deux façons de les appeler** : en slash (`/flash`) ou **en texte avec `!`**
-(`!flash`). Si les slash ne sortent pas dans Discord, utilise le `!` : ça marche
-toujours, sans rien attendre.
+Toutes les commandes sont en **slash** : tu tapes `/` dans Discord et la liste apparaît.
 
-| Slash | Texte | Effet |
-| --- | --- | --- |
-| `/salon` | `!salon` | Crée les rôles et les 10 salons de clips manquants |
-| `/salon installer:true` | `!salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
-| `/resetsalon confirmer:true` | `!resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
-| `/clip lien:…` | `!clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
-| `/flash` | `!flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
-| `/banniere image:…` | `!banniere` (avec l'image en pièce jointe) | Définit la bannière affichée au-dessus des photos et vidéos |
-| `/traduire texte:salut langue:English` | `!traduire salut English` | Traduit ton texte dans la langue choisie |
-| — | `!aide` | Liste toutes les commandes |
+| Commande | Effet |
+| --- | --- |
+| `/salon` | Crée les rôles et les 10 salons de clips manquants |
+| `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
+| `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
+| `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
+| `/flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
+| `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
+| `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
 
-Le préfixe se change dans `config.js` : `prefix = '!'`.
+**Pourquoi elles n'apparaissaient pas** : elles étaient enregistrées « globalement »,
+ce qui peut prendre jusqu'à une heure, ou pas du tout si `GUILD_ID` manquait. Le bot
+enregistre maintenant ses commandes sur **chaque serveur où il est présent**, dès la
+connexion : elles apparaissent en quelques secondes. La ligne
+`[commandes] 6 commande(s) enregistrée(s) sur 1 serveur(s)` dans les logs le confirme.
+
+Si elles ne sortent toujours pas : le bot a été invité sans la permission
+`applications.commands`. Réinvite-le avec le lien OAuth2 en cochant bien
+`bot` **et** `applications.commands`.
 
 ## Les salons : 10 salons de clips numérotés
 
@@ -161,10 +166,10 @@ npm run invite   # affiche le lien d'invitation
 
 ## Dépannage
 
-- **Les commandes n'apparaissent pas** : utilise la version texte, `!flash`, `!clip`,
-  `!salon`, `!aide` — elle ne dépend pas de l'enregistrement Discord. Pour les slash,
-  vérifie `GUILD_ID` dans les secrets, puis ferme et rouvre Discord (le client garde la
-  liste en cache).
+- **Les commandes n'apparaissent pas** : le bot les enregistre sur chaque serveur au
+  démarrage (visible dans les logs : `[commandes] 6 commande(s) enregistrée(s) sur 1
+  serveur(s)`). Ferme et rouvre Discord ensuite : le client garde la liste en cache. Si
+  toujours rien, le bot a été invité sans `applications.commands` — réinvite-le.
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les anciens salons sont toujours là** : `/salon` n'en supprime aucun. Lance
