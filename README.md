@@ -12,7 +12,6 @@ Toutes les commandes sont en **slash** : tu tapes `/` dans Discord et la liste a
 | --- | --- |
 | `/salon` | Crée les rôles et les 10 salons de clips manquants |
 | `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
-| `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
 | `/flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
 | `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
@@ -20,7 +19,6 @@ Toutes les commandes sont en **slash** : tu tapes `/` dans Discord et la liste a
 | `/giveaway prix:… minutes:… gagnants:…` | Lance un concours avec bouton « Enter » (staff) |
 | `/xp membre:…` | Affiche les XP d'un membre |
 | `/classement` | Top 10 des XP du serveur |
-| `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
 
 **Commandes réservées au staff** (`/annonce`, `/giveaway`) : administrateur, ou membre
 ayant le rôle défini dans `MODERATOR_ROLE_ID`.

@@ -7,7 +7,7 @@ module.exports = {
   execute(client) {
     console.log(`Connecté en tant que ${client.user.tag} (${client.guilds.cache.size} serveur(s)).`);
     console.log(
-      'Commands: /salon, /resetsalon, /clip, /flash, /banniere, /traduire, /annonce, /giveaway, /xp, /classement',
+      'Commands: /salon, /clip, /flash, /banniere, /annonce, /giveaway, /xp, /classement',
     );
 
     // Les giveaways en cours reprennent après un redémarrage.
