@@ -1,7 +1,10 @@
 name: Bot Discord
 
-# Plan B gratuit, sans hébergeur : GitHub lance le bot lui-même.
-# Chaque exécution tourne 6 h maximum, puis la suivante prend le relais.
+# GitHub lance le bot lui-même, gratuitement, sans hébergeur.
+# Une exécution dure 6 h maximum : pour éviter un trou entre deux exécutions,
+# le planning relance toutes les 4 h et `cancel-in-progress` remplace l'ancienne
+# exécution par la nouvelle. Le bot n'est donc hors ligne que le temps du
+# redémarrage (environ une minute), au lieu de 10 à 60 minutes d'attente.
 # Il faut ajouter DISCORD_TOKEN, CLIENT_ID et GUILD_ID dans
 # Settings > Secrets and variables > Actions > New repository secret.
 
@@ -11,12 +14,10 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    # Toutes les 6 heures
-    - cron: '0 */6 * * *'
+    # Toutes les 4 heures (l'exécution en cours est remplacée avant sa fin).
+    - cron: '0 */4 * * *'
 
 # Une seule exécution à la fois : deux bots connectés = double réponse.
-# cancel-in-progress : un nouveau lancement remplace proprement l'ancien,
-# ce qui sert de « redémarrer le bot » après une modification du code.
 concurrency:
   group: bot-discord
   cancel-in-progress: true

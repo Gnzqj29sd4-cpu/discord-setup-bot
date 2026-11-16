@@ -194,6 +194,28 @@ npm run invite   # affiche le lien d'invitation
 
 ## Dépannage
 
+### Le bot est hors ligne (grisé dans Discord)
+
+Trois causes possibles, dans l'ordre de fréquence.
+
+**1. GitHub Actions a arrêté l'exécution.** Une exécution dure 6 h maximum ; ensuite
+GitHub doit lancer la suivante, et les exécutions planifiées peuvent avoir 10 à 60 minutes
+de retard. Le workflow relance maintenant toutes les 4 h et remplace l'exécution en cours
+avant sa limite, donc le trou n'est plus que d'environ une minute. Regarde l'onglet
+**Actions** du dépôt : si la dernière exécution est terminée, attends le prochain
+lancement ou clique sur **Run workflow**.
+
+**2. L'exécution a échoué.** Dans l'onglet **Actions**, ouvre la dernière exécution
+rouge : l'étape en échec dit pourquoi (secret manquant, `Used disallowed intents`, token
+invalide). Corrige puis relance.
+
+**3. GitHub a désactivé le planning.** Après 60 jours sans commit, GitHub coupe les
+workflows planifiés : un simple commit (ou **Run workflow**) le réactive.
+
+**Pour un bot en ligne 24 h/24 sans coupure**, héberge-le sur **Render** plutôt que sur
+GitHub Actions : c'est un vrai service qui tourne en continu, avec la page de statut et
+le ping UptimeRobot.
+
 - **Les commandes n'apparaissent pas** : le bot les enregistre sur chaque serveur au
   démarrage (visible dans les logs : `[commandes] 6 commande(s) enregistrée(s) sur 1
   serveur(s)`). Ferme et rouvre Discord ensuite : le client garde la liste en cache. Si
