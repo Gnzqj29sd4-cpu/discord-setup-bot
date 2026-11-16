@@ -86,7 +86,8 @@ function hasMedia(message) {
 
 /**
  * Construit les embeds : la bannière au-dessus, puis le média encadré par la
- * couleur du serveur (c'est le cadre).
+ * couleur du serveur (c'est le cadre). Le texte du message n'est jamais repris :
+ * seule l'image compte.
  */
 function buildFramedEmbeds(message) {
   const media = pickMedia(message);
@@ -108,9 +109,7 @@ function buildFramedEmbeds(message) {
     .setFooter({ text: branding.footer })
     .setTimestamp(message.createdAt);
 
-  const isImage = isImageFile(media);
-
-  if (isImage) {
+  if (isImageFile(media)) {
     frame.setImage(media.url);
   } else {
     // Une vidéo ne s'affiche pas dans une image d'embed : Discord montre déjà
@@ -118,10 +117,7 @@ function buildFramedEmbeds(message) {
     frame.addFields({ name: '🎥 Video', value: `[${media.name}](${media.url})` });
   }
 
-  if (message.content && message.content.trim().length > 0) {
-    frame.setDescription(message.content.slice(0, 1500));
-  }
-
+  // Le texte écrit par la personne n'est pas recopié dans le cadre.
   embeds.push(frame);
   return embeds;
 }

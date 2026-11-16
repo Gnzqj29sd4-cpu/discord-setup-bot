@@ -12,6 +12,7 @@ la traduction par drapeau, et une charte orange et noir. Tout se règle dans
 | `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
 | `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
+| `/flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
 | `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
 
@@ -49,6 +50,9 @@ automatiquement avec :
 1. **ta bannière** en pleine largeur, au-dessus ;
 2. **le média encadré** juste en dessous (bordure orange `0xff5900`, nom de l'auteur,
    pied de page `CORTISOLSCRIPT • CONTENT CREATOR TEAM`).
+
+Le texte écrit par la personne n'est **pas** recopié dans le cadre : seule l'image compte.
+Pour poster la bannière seule, sans texte, utilise `/flash`.
 
 **Pour mettre ta bannière** : `/banniere image:<ta photo>` — envoie l'image en pièce
 jointe dans l'option. Elle est enregistrée et utilisée pour tous les messages suivants.
