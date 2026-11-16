@@ -114,8 +114,10 @@ async function createChannels(guild, log = () => {}) {
 }
 
 /**
- * Supprime uniquement les salons listés dans config.js (leurs enfants d'abord,
- * puis la catégorie). Les autres salons du serveur ne sont jamais touchés.
+ * Supprime les salons des catégories décrites dans config.js : tous leurs
+ * enfants (quel que soit leur nom, pour nettoyer aussi les anciens salons
+ * renommés), puis la catégorie elle-même. Les autres catégories du serveur ne
+ * sont jamais touchées.
  */
 async function deleteConfiguredChannels(guild, log = () => {}) {
   const existing = await guild.channels.fetch();
@@ -129,18 +131,24 @@ async function deleteConfiguredChannels(guild, log = () => {}) {
     const channelNames = new Set((catDef.channels || []).map((channel) => channel.name));
 
     for (const channel of existing.values()) {
+      if (channel.type === ChannelType.GuildCategory) continue;
+
       const inCategory = category ? channel.parentId === category.id : false;
-      const matches = channelNames.has(channel.name) && (inCategory || !category);
+      // Dans la catégorie configurée : on supprime tout. Sinon : seulement les
+      // salons dont le nom est explicitement dans config.js.
+      const matches = inCategory || channelNames.has(channel.name);
       if (!matches) continue;
 
-      await channel.delete('Reset via /setup reset');
+      await channel.delete('Reset via /salon installer').catch((error) => {
+        log(`suppression impossible (${channel.name}) : ${error.message}`);
+      });
       deleted.push(channel.name);
       log(`salon supprimé : ${channel.name}`);
       await sleep(250);
     }
 
     if (category) {
-      await category.delete('Reset via /setup reset');
+      await category.delete('Reset via /salon installer').catch(() => {});
       deleted.push(`📁 ${category.name}`);
       await sleep(250);
     }

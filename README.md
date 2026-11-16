@@ -8,26 +8,24 @@ la traduction par drapeau, et une charte orange et noir. Tout se règle dans
 
 | Commande | Effet |
 | --- | --- |
-| `/salon` | Crée les rôles et les 16 salons de clips manquants |
+| `/salon` | Crée les rôles et les 10 salons de clips manquants |
 | `/salon installer:true` | **Installe tous les salons** : supprime ceux de `config.js`, puis les recrée tous |
 | `/resetsalon confirmer:true` | Supprime seulement les salons de `config.js` |
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
 | `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
 
-## Les salons : uniquement des clips
+## Les salons : 10 salons de clips numérotés
 
 ```
 🎬・CLIPS
-  📱・tiktok          ▶️・youtube        📸・instagram      🎮・twitch
-  🐦・x-clips         🟣・kick           📘・facebook       👻・snapchat
-  🟠・reddit          😂・funny-clips    💥・edits          🎵・music-clips
-  🏀・sports-clips    🕹️・gaming-clips   🎬・other-clips    🏆・best-clips
+  🎬・clip-1    🎬・clip-2    🎬・clip-3    🎬・clip-4    🎬・clip-5
+  🎬・clip-6    🎬・clip-7    🎬・clip-8    🎬・clip-9    🎬・clip-10
 ```
 
-**16 salons, une seule catégorie.** Aucun salon d'information, de règles, de staff ou
-de vocal : uniquement des clips. `🏆・best-clips` est en lecture seule, les autres sont
-ouverts à tous.
+**10 salons, accessibles à 100 %.** Chaque salon est en accès complet pour @everyone :
+voir, écrire, joindre des fichiers, réagir. Rien n'est en lecture seule, rien n'est
+réservé au staff. Le nombre se règle avec `clipChannelCount` dans `config.js`.
 
 ## `/clip`
 
@@ -137,8 +135,9 @@ https://uptimerobot.com toutes les 5 minutes sur l'adresse du service.
 
 ### 4. Configurer le serveur
 
-Sur Discord : `/salon`. C'est tout — les 16 salons de clips apparaissent. Si des salons
-doivent être remis à zéro, `/salon installer:true`.
+Sur Discord : `/salon`. C'est tout — les 10 salons `🎬・clip-1` à `🎬・clip-10`
+apparaissent, tous accessibles à tout le monde. Si des salons doivent être remis à zéro,
+`/salon installer:true`.
 
 ## Commandes du projet (terminal)
 
@@ -156,9 +155,10 @@ npm run invite   # affiche le lien d'invitation
 - **« Missing Permissions »** : le rôle du bot est trop bas, ou il manque *Gérer les
   salons* / *Gérer les rôles*.
 - **Les anciens salons sont toujours là** : `/salon` n'en supprime aucun. Lance
-  `/salon installer:true` : il supprime les salons de `config.js` puis réinstalle les 16
-  salons de clips. Pour les salons qui ne sont plus dans `config.js` (ancien général,
-  staff, règles…), supprime-les à la main.
+  `/salon installer:true` : il vide la catégorie `🎬・CLIPS` (quel que soit le nom des
+  salons qu'elle contient) puis réinstalle les 10 salons `clip-1` à `clip-10`. Les
+  salons d'autres catégories (ancien général, staff, règles…) restent : supprime-les à
+  la main.
 - **La traduction par drapeau ne marche pas** : active **MESSAGE CONTENT INTENT** dans le
   portail Discord (onglet Bot), puis redémarre le bot.
 - **`/clip` refuse le lien** : il doit ressembler à un vrai lien (`tiktok.com/…`,

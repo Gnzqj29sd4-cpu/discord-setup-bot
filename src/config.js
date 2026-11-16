@@ -95,9 +95,23 @@ const roleGroups = {
 //  4. CHANNEL ACCESS LEVELS
 // -----------------------------------------------------------------------------
 const accessPresets = {
-  // Everyone can read and write
+  // 100% accessibility: everyone can read, write, attach clips and react.
+  // Everything is allowed explicitly, so a restrictive server-level permission
+  // cannot lock the clip channels.
   public: {
-    everyone: { allow: ['ViewChannel', 'ReadMessageHistory'], deny: [] },
+    everyone: {
+      allow: [
+        'ViewChannel',
+        'ReadMessageHistory',
+        'SendMessages',
+        'SendMessagesInThreads',
+        'AttachFiles',
+        'EmbedLinks',
+        'AddReactions',
+        'UseExternalEmojis',
+      ],
+      deny: [],
+    },
     groups: {},
   },
   // Everyone can read, only staff can write
@@ -120,35 +134,21 @@ const accessPresets = {
 };
 
 // -----------------------------------------------------------------------------
-//  5. CHANNELS — clip channels only
+//  5. CHANNELS — 10 numbered clip channels, open to everyone
+//  Every channel is 'public': @everyone can read, write, attach and react.
 // -----------------------------------------------------------------------------
+const clipChannelCount = 10;
+
 const categories = [
   {
     name: '🎬・CLIPS',
     access: 'public',
-    channels: [
-      { name: '📱・tiktok', type: 'text', topic: 'TikTok clips — use /clip' },
-      { name: '▶️・youtube', type: 'text', topic: 'YouTube clips — use /clip' },
-      { name: '📸・instagram', type: 'text', topic: 'Instagram reels — use /clip' },
-      { name: '🎮・twitch', type: 'text', topic: 'Twitch clips — use /clip' },
-      { name: '🐦・x-clips', type: 'text', topic: 'X / Twitter clips — use /clip' },
-      { name: '🟣・kick', type: 'text', topic: 'Kick clips — use /clip' },
-      { name: '📘・facebook', type: 'text', topic: 'Facebook clips — use /clip' },
-      { name: '👻・snapchat', type: 'text', topic: 'Snapchat clips — use /clip' },
-      { name: '🟠・reddit', type: 'text', topic: 'Reddit clips — use /clip' },
-      { name: '😂・funny-clips', type: 'text', topic: 'The funniest clips — use /clip' },
-      { name: '💥・edits', type: 'text', topic: 'Edits and montages — use /clip' },
-      { name: '🎵・music-clips', type: 'text', topic: 'Music clips — use /clip' },
-      { name: '🏀・sports-clips', type: 'text', topic: 'Sports clips — use /clip' },
-      { name: '🕹️・gaming-clips', type: 'text', topic: 'Gaming clips — use /clip' },
-      { name: '🎬・other-clips', type: 'text', topic: 'Any other clip — use /clip' },
-      {
-        name: '🏆・best-clips',
-        type: 'text',
-        access: 'readonly',
-        topic: 'The best clips of the week',
-      },
-    ],
+    channels: Array.from({ length: clipChannelCount }, (_, index) => ({
+      name: `🎬・clip-${index + 1}`,
+      type: 'text',
+      access: 'public',
+      topic: `Clip ${index + 1} — post your photo or video with /clip`,
+    })),
   },
 ];
 
