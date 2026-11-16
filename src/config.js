@@ -153,6 +153,12 @@ const categories = [
 ];
 
 // -----------------------------------------------------------------------------
+//  5b. PREFIX — text commands, used when slash commands do not show up
+//  `!flash`, `!clip lien:https://…`, `!salon`, `!banniere`, `!traduire`, `!aide`
+// -----------------------------------------------------------------------------
+const prefix = '!';
+
+// -----------------------------------------------------------------------------
 //  6. NEW MEMBERS
 // -----------------------------------------------------------------------------
 const autoRolesOnJoin = ['member'];
@@ -249,6 +255,7 @@ module.exports = {
   roleGroups,
   accessPresets,
   categories,
+  prefix,
   autoRolesOnJoin,
   boosterRole,
   welcome,
