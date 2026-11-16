@@ -227,7 +227,36 @@ const flags = {
 };
 
 // -----------------------------------------------------------------------------
-//  10. BRANDING — banner above every photo/video
+//  10b. MODERATION & STAFF
+//  Les identifiants viennent des variables d'environnement (.env / hébergeur).
+// -----------------------------------------------------------------------------
+const moderation = {
+  // Rôle autorisé à lancer /annonce et /giveaway (en plus des administrateurs).
+  roleId: process.env.MODERATOR_ROLE_ID ?? '',
+};
+
+// -----------------------------------------------------------------------------
+//  10c. XP — 1 message = des points, avec un délai entre deux gains
+// -----------------------------------------------------------------------------
+const xp = {
+  enabled: true,
+  cooldownMs: 60 * 1000,
+  min: 5,
+  max: 15,
+};
+
+// -----------------------------------------------------------------------------
+//  10d. RÔLES DE LANGUE AUTOMATIQUES
+//  Le bot devine la langue du message et donne le rôle correspondant.
+// -----------------------------------------------------------------------------
+const languageRoles = {
+  eng: process.env.ROLE_ENGLISH_ID ?? '',
+  fra: process.env.ROLE_FRENCH_ID ?? '',
+  ara: process.env.ROLE_ARABIC_ID ?? '',
+};
+
+// -----------------------------------------------------------------------------
+//  11. BRANDING — banner above every photo/video
 //  When someone posts an image or a video in a clip channel, the bot replies
 //  with your banner on top and the media framed below it.
 // -----------------------------------------------------------------------------
@@ -256,5 +285,8 @@ module.exports = {
   translation,
   flags,
   clips,
+  moderation,
+  xp,
+  languageRoles,
   branding,
 };

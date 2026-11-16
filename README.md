@@ -16,7 +16,33 @@ Toutes les commandes sont en **slash** : tu tapes `/` dans Discord et la liste a
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
 | `/flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
 | `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
+| `/annonce titre:… texte:…` | Publie une annonce orange et noire (staff) |
+| `/giveaway prix:… minutes:… gagnants:…` | Lance un concours avec bouton « Enter » (staff) |
+| `/xp membre:…` | Affiche les XP d'un membre |
+| `/classement` | Top 10 des XP du serveur |
 | `/traduire texte:salut langue:English` | Traduit ton texte dans la langue choisie |
+
+**Commandes réservées au staff** (`/annonce`, `/giveaway`) : administrateur, ou membre
+ayant le rôle défini dans `MODERATOR_ROLE_ID`.
+
+## XP et rôles de langue automatiques
+
+- **XP** : chaque message écrit rapporte entre 5 et 15 XP, au maximum une fois par minute
+  et par membre. `/xp` et `/classement` affichent les scores. Les points sont enregistrés
+  dans `data/xp.json` — pour les garder entre deux déploiements, ajoute un disque
+  persistant chez l'hébergeur.
+- **Rôles de langue** : le bot devine la langue du message (arabe par l'alphabet, puis
+  français ou anglais par les mots courants) et donne le rôle correspondant, défini par
+  `ROLE_ENGLISH_ID`, `ROLE_FRENCH_ID` et `ROLE_ARABIC_ID`. Aucune dépendance externe.
+
+## Giveaways
+
+`/giveaway prix:Nitro minutes:60 gagnants:1` poste un embed orange avec un bouton
+**🎉 Enter**. Le nombre de participations se met à jour en direct. À la fin, le bot tire
+au sort les gagnants, remplace l'embed par le résultat et mentionne les gagnants.
+
+Les giveaways sont enregistrés dans `data/giveaways.json` : après un redémarrage, ceux qui
+sont encore en cours reprennent automatiquement au moment prévu.
 
 **Pourquoi elles n'apparaissaient pas** : elles étaient enregistrées « globalement »,
 ce qui peut prendre jusqu'à une heure, ou pas du tout si `GUILD_ID` manquait. Le bot
@@ -116,8 +142,9 @@ Tout est dans **`src/config.js`** :
 - `theme` — les couleurs.
 - `roles`, `roleGroups`, `accessPresets` — rôles et permissions.
 - `categories` — les salons (une seule catégorie : `🎬・CLIPS`).
+- `moderation`, `xp`, `languageRoles` — staff, XP et rôles de langue automatiques.
 - `autoRolesOnJoin`, `boosterRole`, `welcome` (`channel: ''` = pas de message).
-- `languages`, `translation`, `flags`, `clips`.
+- `languages`, `translation`, `flags`, `clips`, `branding`.
 
 Après une modification : relance le bot, puis `/salon`.
 
@@ -142,7 +169,8 @@ glisse le rôle du bot **tout en haut**.
 **GitHub Actions** (aucun compte à créer, dépôt public) :
 
 1. **Settings** > **Secrets and variables** > **Actions** > **New repository secret** :
-   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`.
+   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`, et si tu utilises les rôles de langue
+   `MODERATOR_ROLE_ID`, `ROLE_ENGLISH_ID`, `ROLE_FRENCH_ID`, `ROLE_ARABIC_ID`.
 2. Onglet **Actions** > **Bot Discord** > **Run workflow**.
 
 **Render** (gratuit, sans coupure avec un ping) : **New** > **Web Service** > ce dépôt
