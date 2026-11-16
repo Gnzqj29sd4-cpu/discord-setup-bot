@@ -20,7 +20,11 @@ function hintFor(message = '') {
   const text = String(message).toLowerCase();
 
   if (text.includes('invalid token') || text.includes('401') || text.includes('unauthorized')) {
-    return 'Le DISCORD_TOKEN est faux ou a été révoqué. Portail Discord > Bot > Reset Token, puis remplace la valeur dans Render > Environment.';
+    return (
+      'Le DISCORD_TOKEN est faux ou a été révoqué. Portail Discord > Bot > Reset Token, ' +
+      'copie le nouveau token, puis remplace la valeur du secret DISCORD_TOKEN ' +
+      '(GitHub : Settings > Secrets and variables > Actions ; Render : Environment).'
+    );
   }
   if (text.includes('disallowed intents') || text.includes('4014')) {
     return 'Portail Discord > Bot > Privileged Gateway Intents : active SERVER MEMBERS INTENT et MESSAGE CONTENT INTENT, puis Save Changes, et redémarre le service.';
@@ -28,7 +32,7 @@ function hintFor(message = '') {
   if (text.includes('enotfound') || text.includes('econnrefused') || text.includes('etimedout')) {
     return 'Le service n\'arrive pas à joindre Discord : réseau bloqué ou panne passagère.';
   }
-  return 'Vérifie DISCORD_TOKEN, CLIENT_ID et GUILD_ID dans Render > Environment, puis Manual Deploy > Deploy latest commit.';
+  return 'Vérifie DISCORD_TOKEN, CLIENT_ID et GUILD_ID dans les variables d\'environnement du service, puis relance-le.';
 }
 
 function setEnvReport(report) {
