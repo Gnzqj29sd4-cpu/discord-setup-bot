@@ -1,7 +1,9 @@
 'use strict';
 
-const { hasMedia, buildFramedEmbeds } = require('../lib/branding');
+const { AttachmentBuilder } = require('discord.js');
+const { hasMedia, buildFramedEmbeds, pickMedia } = require('../lib/branding');
 const { detectLanguage } = require('../lib/detect');
+const { frameImage, frameAvailable } = require('../lib/frame');
 const { branding, xp: xpConfig, languageRoles } = require('../config');
 const { addXp } = require('../lib/store');
 
@@ -38,8 +40,33 @@ async function awardLanguageRole(message) {
 }
 
 /**
+ * Photo dans le cadre : télécharge l'image, la colle dans le cadre avec le
+ * pseudo, et renvoie le résultat en pièce jointe. true si le message est traité.
+ */
+async function applyFrame(message) {
+  const media = pickMedia(message);
+  if (!media) return false;
+  if (!(media.contentType ?? '').startsWith('image/')) return false;
+
+  if (!(await frameAvailable())) return false;
+
+  const response = await fetch(media.url, { signal: AbortSignal.timeout(20_000) });
+  if (!response.ok) return false;
+
+  const source = Buffer.from(await response.arrayBuffer());
+  const nickname = message.member?.displayName ?? message.author.username;
+  const framed = await frameImage(source, nickname);
+  if (!framed) return false;
+
+  const file = new AttachmentBuilder(framed, { name: 'cortisolclips.png' });
+  await message.reply({ files: [file], allowedMentions: { repliedUser: false } });
+  return true;
+}
+
+/**
  * 1. Rôle de langue automatique + XP.
- * 2. Cadrage automatique des photos et vidéos dans les salons de clips.
+ * 2. Photo → collée dans le cadre CortisolClips, avec le pseudo.
+ * 3. Sinon (vidéo, ou cadre absent) → bannière + média encadré.
  */
 module.exports = {
   name: 'messageCreate',
@@ -54,13 +81,20 @@ module.exports = {
       await awardLanguageRole(message);
     }
 
-    // Cadrage : seulement les photos et vidéos.
     if (!branding.enabled) return;
     if (branding.channels.length > 0 && !branding.channels.includes(message.channel?.name)) {
       return;
     }
     if (!hasMedia(message)) return;
 
+    // 1. Photo : collage automatique dans le cadre.
+    try {
+      if (await applyFrame(message)) return;
+    } catch (error) {
+      console.warn('[cadre] collage impossible :', error.message);
+    }
+
+    // 2. Repli : bannière + média encadré.
     try {
       await message.reply({
         embeds: buildFramedEmbeds(message),

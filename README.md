@@ -15,6 +15,7 @@ Toutes les commandes sont en **slash** : tu tapes `/` dans Discord et la liste a
 | `/clip lien:…` | Publie un clip (TikTok, YouTube, Instagram, Twitch, Kick…) |
 | `/flash` | Poste uniquement la bannière du serveur, **sans aucun texte** |
 | `/banniere image:…` | Définit la bannière affichée au-dessus des photos et vidéos |
+| `/cadre image:…` | Définit le cadre CortisolClips appliqué aux photos (option `zone`) |
 | `/annonce titre:… texte:…` | Publie une annonce orange et noire (staff) |
 | `/giveaway prix:… minutes:… gagnants:…` | Lance un concours avec bouton « Enter » (staff) |
 | `/xp membre:…` | Affiche les XP d'un membre |
@@ -101,6 +102,38 @@ Le bot la sert lui-même sur `/banner.png`.
 
 Réglages dans `config.js`, section `branding` : `enabled`, `channels` (salons concernés,
 vide = tous), `frameColor`, `footer`, `bannerUrl`.
+
+## Le cadre CortisolClips (photos)
+
+Quand quelqu'un poste **une photo**, le bot la place automatiquement dans ton cadre :
+photo redimensionnée dans la zone centrale, cadre par-dessus, **pseudo de l'auteur**
+écrit en bas. Le résultat est renvoyé en image (`cortisolclips.png`), sans qu'aucune
+commande ne soit nécessaire.
+
+**Mise en place** : `/cadre image:<ton PNG>` une seule fois. Le bot détecte tout seul la
+zone transparente au centre du cadre.
+
+Si ton cadre n'a pas de centre transparent (centre noir ou blanc opaque), indique la zone
+à la main, en pourcentage de la largeur et de la hauteur :
+
+```
+/cadre image:<ton PNG> zone:12,18,76,68
+```
+
+soit `gauche,haut,largeur,hauteur` en %. Le bot te répond avec la zone qu'il a trouvée —
+vérifie qu'elle correspond bien au rectangle vide de ton cadre.
+
+**Pour que le cadre survive à un redéploiement** : la commande te donne la ligne
+`FRAME_URL` à coller dans les variables de l'hébergeur (le disque est effacé à chaque
+déploiement). Sinon, dépose le fichier en `assets/frame.png` dans le dépôt.
+
+Réglages dans `config.js`, section `frame` : `enabled`, `showUsername`, `text.color`,
+`text.sizeRatio` (taille du pseudo), `text.bottomRatio`.
+
+**Les vidéos** : Discord ne permet pas de mettre une vidéo *à l'intérieur* d'une image —
+son lecteur est géré par Discord et ne peut pas être encadré. Une vidéo postée reçoit donc
+la bannière + le média encadré (comme avant). Pour avoir le cadre sur une vidéo, il faut
+graver le cadre dans le fichier vidéo avant de l'envoyer.
 
 Le bot a besoin de la permission **Read Messages** et **Attach Files** pour répondre, et
 de l'intent **MESSAGE CONTENT** (déjà nécessaire pour la traduction).

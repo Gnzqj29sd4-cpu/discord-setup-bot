@@ -273,6 +273,25 @@ const branding = {
   bannerUrl: '',
 };
 
+// -----------------------------------------------------------------------------
+//  11b. FRAME — the CortisolClips frame applied to photos
+//  The frame is a PNG with a transparent centre: the member's photo goes
+//  inside, the frame on top, and their nickname is written at the bottom.
+//  Put the file in assets/frame.png, or upload it once with /cadre.
+// -----------------------------------------------------------------------------
+const frame = {
+  enabled: true,
+  showUsername: true,
+  // Where the nickname goes, as a ratio of the frame height.
+  text: {
+    color: '#ffffff',
+    // Text size relative to the frame height.
+    sizeRatio: 0.045,
+    // Distance from the bottom, relative to the frame height.
+    bottomRatio: 0.055,
+  },
+};
+
 module.exports = {
   theme,
   roles,
@@ -290,4 +309,5 @@ module.exports = {
   xp,
   languageRoles,
   branding,
+  frame,
 };
