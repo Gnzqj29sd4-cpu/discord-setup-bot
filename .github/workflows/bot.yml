@@ -38,25 +38,28 @@ jobs:
 
       - name: Vérifier les secrets
         env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          # DISCORD_TOKEN_2 est prioritaire : il suffit de le créer comme un
+          # nouveau secret, sans passer par la page de modification.
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN_2 || secrets.DISCORD_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
         run: |
           if [ -z "$DISCORD_TOKEN" ]; then
-            echo "::error::Secret DISCORD_TOKEN manquant. Settings > Secrets and variables > Actions > New repository secret."
+            echo "::error::Secret DISCORD_TOKEN manquant."
             exit 1
           fi
           if [ -z "$CLIENT_ID" ]; then
-            echo "::error::Secret CLIENT_ID manquant. Settings > Secrets and variables > Actions > New repository secret."
+            echo "::error::Secret CLIENT_ID manquant."
             exit 1
           fi
-          echo "Secrets présents : DISCORD_TOKEN (${#DISCORD_TOKEN} caractères), CLIENT_ID=$CLIENT_ID"
+          echo "Secrets présents : token ${#DISCORD_TOKEN} caractères, CLIENT_ID=$CLIENT_ID, GUILD_ID=${GUILD_ID:-absent}"
 
       - name: Installer les dépendances
         run: npm install
 
       - name: Lancer le bot
         env:
-          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN_2 || secrets.DISCORD_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           GUILD_ID: ${{ secrets.GUILD_ID }}
         run: npm start
