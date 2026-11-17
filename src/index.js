@@ -13,14 +13,31 @@ const status = require('./lib/status');
 status.start();
 
 const token = process.env.DISCORD_TOKEN;
-const clientId = process.env.CLIENT_ID;
+
+/**
+ * L'identifiant de l'application est le premier segment du token, encodé en
+ * base64. Le lire ici évite d'avoir une variable CLIENT_ID à configurer.
+ */
+function clientIdFromToken(value) {
+  if (!value) return null;
+  try {
+    const decoded = Buffer.from(value.split('.')[0], 'base64').toString('utf8');
+    return /^\d{17,20}$/.test(decoded) ? decoded : null;
+  } catch {
+    return null;
+  }
+}
+
+const clientId = process.env.CLIENT_ID || clientIdFromToken(token);
 const guildId = process.env.GUILD_ID;
 
 // Rapport des variables, visible sur la page de diagnostic (jamais le token).
 status.setEnvReport({
   DISCORD_TOKEN: token ? `défini (${token.length} caractères)` : 'MANQUANT',
-  CLIENT_ID: clientId || 'MANQUANT',
-  GUILD_ID: guildId || 'vide (commandes globales, ~1 h d\'attente)',
+  CLIENT_ID: clientId
+    ? `${clientId}${process.env.CLIENT_ID ? '' : ' (déduit du token)'}`
+    : 'MANQUANT',
+  GUILD_ID: guildId || 'vide (tous les serveurs du bot sont utilisés)',
   PORT: process.env.PORT || 'non défini',
 });
 

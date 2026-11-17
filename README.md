@@ -197,16 +197,33 @@ glisse le rôle du bot **tout en haut**.
 
 ### 3. Faire tourner le bot (gratuit)
 
-**GitHub Actions** (aucun compte à créer, dépôt public) :
+**Option recommandée — Render, sans passer par les secrets GitHub**
+
+Le dépôt est public, donc Render peut le lire sans que tu aies besoin d'accéder au
+compte GitHub :
+
+1. https://render.com → **Get started** → crée un compte (email ou Google, **le tien**).
+2. **New** > **Web Service** > onglet **Public Git repository**.
+3. Colle l'adresse du dépôt :
+   `https://github.com/Gnzqj29sd4-cpu/discord-setup-bot`
+4. Renseigne :
+   - **Build Command** : `npm install`
+   - **Start Command** : `npm start`
+   - **Instance Type** : `Free`
+5. Dans **Environment**, ajoute une seule variable :
+   - `DISCORD_TOKEN` = ton token de bot
+   (`CLIENT_ID` est déduit automatiquement du token, `GUILD_ID` est facultatif.)
+6. **Create Web Service**. Au bout de 2-3 minutes, les **Logs** doivent afficher
+   `[bot] connecté : …` puis `[commandes] N commande(s) enregistrée(s)`.
+
+Pour éviter la mise en veille du plan gratuit : https://uptimerobot.com, monitor
+**HTTP(s)** sur l'adresse du service, toutes les 5 minutes.
+
+**Option GitHub Actions** (seulement si tu as la main sur le dépôt et ses secrets) :
 
 1. **Settings** > **Secrets and variables** > **Actions** > **New repository secret** :
-   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`, et si tu utilises les rôles de langue
-   `MODERATOR_ROLE_ID`, `ROLE_ENGLISH_ID`, `ROLE_FRENCH_ID`, `ROLE_ARABIC_ID`.
+   `DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`.
 2. Onglet **Actions** > **Bot Discord** > **Run workflow**.
-
-**Render** (gratuit, sans coupure avec un ping) : **New** > **Web Service** > ce dépôt
-(`render.yaml` fait le reste), ajoute les trois variables, puis un monitor
-https://uptimerobot.com toutes les 5 minutes sur l'adresse du service.
 
 ### 4. Configurer le serveur
 
